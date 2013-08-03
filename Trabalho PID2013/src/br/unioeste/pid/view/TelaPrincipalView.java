@@ -7,6 +7,7 @@ import javax.swing.JTabbedPane;
 import java.awt.GridBagConstraints;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
+import javax.swing.JScrollPane;
 
 public class TelaPrincipalView extends JFrame {
 
@@ -22,6 +23,7 @@ public class TelaPrincipalView extends JFrame {
 	protected JMenu mnExibir;
 	protected JMenuItem mntmHistograma;
 	protected JTabbedPane tabbedPane;
+	protected JScrollPane scrollPane;
 	
 	public TelaPrincipalView() {
 		initGUI();
@@ -68,12 +70,15 @@ public class TelaPrincipalView extends JFrame {
 		gridBagLayout.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		getContentPane().setLayout(gridBagLayout);
 		
+		this.scrollPane = new JScrollPane();
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.gridx = 0;
+		gbc_scrollPane.gridy = 0;
+		getContentPane().add(this.scrollPane, gbc_scrollPane);
+		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		GridBagConstraints gbc_tabbedPane = new GridBagConstraints();
-		gbc_tabbedPane.fill = GridBagConstraints.BOTH;
-		gbc_tabbedPane.gridx = 0;
-		gbc_tabbedPane.gridy = 0;
-		getContentPane().add(tabbedPane, gbc_tabbedPane);
+		this.scrollPane.setViewportView(this.tabbedPane);
 	}
 
 }
