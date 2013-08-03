@@ -37,11 +37,10 @@ import br.unioeste.pid.view.TelaPrincipalView;
 import com.jgoodies.looks.common.RGBGrayFilter;
 
 public class TelaPrincipal extends TelaPrincipalView {
-	private static final Icon CLOSE_TAB_ICON = new ImageIcon("..\\closeTabButton.png", null);
+	private static final Icon CLOSE_TAB_ICON = new ImageIcon("libs\\closeTabButton.png", null);
 	private static final long serialVersionUID = 1L;
 	private File file;
 	private Image Arquivo;
-	private int tabSelected;
 
 	public TelaPrincipal() {
 		setPreferredSize(new Dimension(800, 600));
@@ -50,7 +49,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 		mntmAbrir.addActionListener(new ActionAbrir());
 		mntmSalvar.addActionListener(new ActionSalvar());
 		mntmGreyscale.addActionListener(new ActionGreyScale());
-
+		mntmPassaalta.addActionListener(new ActionPassaAlta());
+		mntmOperaes.addActionListener(new ActionOperacoes());
 	}
 
 	public static void main(String[] args) {
@@ -86,23 +86,22 @@ public class TelaPrincipal extends TelaPrincipalView {
 			}
 			try {
 				Arquivo.ReadFile(new FileInputStream(file));
+				ImagePanel imagePanel = new ImagePanel();
+				JScrollPane scroll = new JScrollPane();
+				scroll.setViewportView(imagePanel);
+				addClosableTab(tabbedPane, scroll, file.getName(), null);
+
+				imagePanel.setPreferredSize(new Dimension(Arquivo.getWidth(), Arquivo.getHeight()));
+				imagePanel.setSize(new Dimension(Arquivo.getWidth(), Arquivo.getHeight()));
+				imagePanel.setImagem(Arquivo);
+				imagePanel.reset();
+				imagePanel.update();
+				if (!Arquivo.isP8bits()) {
+					mntmGreyscale.setEnabled(true);
+				}
 			} catch (FileNotFoundException ex) {
 				Logger.getLogger(TelaPrincipalView.class.getName()).log(Level.SEVERE, null, ex);
 				JOptionPane.showMessageDialog(null, "Erro Fatal: Não foi possível abrir o arquivo da imagem.\n" + ex);
-			}
-			ImagePanel imagePanel = new ImagePanel();
-			JScrollPane scroll = new JScrollPane();
-			scroll.setViewportView(imagePanel);
-			addClosableTab(tabbedPane, scroll, file.getName(), null);
-			
-			imagePanel.setPreferredSize(new Dimension(Arquivo.getWidth(), Arquivo.getHeight()));
-			imagePanel.setSize(new Dimension(Arquivo.getWidth(), Arquivo.getHeight()));
-			imagePanel.setImagem(Arquivo);
-			imagePanel.reset();
-			imagePanel.update();
-
-			if (!Arquivo.isP8bits()) {
-				mntmGreyscale.setEnabled(true);
 			}
 
 		}
@@ -161,15 +160,11 @@ public class TelaPrincipal extends TelaPrincipalView {
 	private class ActionGreyScale extends AbstractAction {
 		ImagePanel imagePanel;
 
-		public ActionGreyScale() {
-
-		}
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
 			imagePanel = (ImagePanel) scroll.getViewport().getView();
-			if (imagePanel != null) {
+			if (imagePanel != null && Arquivo != null) {
 				Arquivo.getmPixel().grayScale();
 				imagePanel.reset();
 				imagePanel.update();
@@ -178,6 +173,34 @@ public class TelaPrincipal extends TelaPrincipalView {
 			}
 		}
 
+	}
+
+	private class ActionPassaAlta extends AbstractAction {
+		ImagePanel imagePanel;
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
+			imagePanel = (ImagePanel) scroll.getViewport().getView();
+			if (imagePanel != null && Arquivo != null) {
+				Arquivo.getmPixel().passaAlta();
+				imagePanel.reset();
+				imagePanel.update();
+			} else {
+				System.out.println("FODEO");
+			}
+		}
+
+	}
+
+	private class ActionOperacoes extends AbstractAction{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			new TelaOperacoes().setVisible(true);
+			
+		}
+		
 	}
 
 	public void addClosableTab(final JTabbedPane tabbedPane, final JComponent c, final String title, final Icon icon) {

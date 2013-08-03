@@ -24,6 +24,9 @@ public class TelaPrincipalView extends JFrame {
 	protected JMenuItem mntmHistograma;
 	protected JTabbedPane tabbedPane;
 	protected JScrollPane scrollPane;
+	protected JMenu mnFiltro;
+	protected JMenuItem mntmPassaalta;
+	protected JMenuItem mntmOperaes;
 	
 	public TelaPrincipalView() {
 		initGUI();
@@ -49,6 +52,9 @@ public class TelaPrincipalView extends JFrame {
 		mntmGreyscale = new JMenuItem("GreyScale");
 		mnImagem.add(mntmGreyscale);
 		
+		this.mntmOperaes = new JMenuItem("Opera\u00E7\u00F5es");
+		this.mnImagem.add(this.mntmOperaes);
+		
 		mnConverter = new JMenu("Converter");
 		mnImagem.add(mnConverter);
 		
@@ -57,6 +63,12 @@ public class TelaPrincipalView extends JFrame {
 		
 		mntmbits_1 = new JMenuItem("8Bits");
 		mnConverter.add(mntmbits_1);
+		
+		this.mnFiltro = new JMenu("Filtro");
+		this.mnImagem.add(this.mnFiltro);
+		
+		this.mntmPassaalta = new JMenuItem("Passa-Alta");
+		this.mnFiltro.add(this.mntmPassaalta);
 		
 		mnExibir = new JMenu("Exibir");
 		menuBar.add(mnExibir);
