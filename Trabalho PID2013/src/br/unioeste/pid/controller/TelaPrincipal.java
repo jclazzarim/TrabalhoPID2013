@@ -2,8 +2,13 @@ package br.unioeste.pid.controller;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.color.ColorSpace;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,6 +16,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -35,6 +41,8 @@ import br.unioeste.pid.imagem.pixel.MPixel;
 import br.unioeste.pid.view.TelaPrincipalView;
 
 import com.jgoodies.looks.common.RGBGrayFilter;
+import com.pearsoneduc.ip.op.FFTException;
+import com.pearsoneduc.ip.op.ImageFFT;
 
 public class TelaPrincipal extends TelaPrincipalView {
 	private static final Icon CLOSE_TAB_ICON = new ImageIcon("libs\\closeTabButton.png", null);
@@ -45,7 +53,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 	public TelaPrincipal() {
 		setPreferredSize(new Dimension(800, 600));
 		setMinimumSize(new Dimension(800, 600));
-		mntmHistograma.addActionListener(new ActionHistograma());
+		//mntmHistograma.addActionListener(new ActionHistograma());
 		mntmAbrir.addActionListener(new ActionAbrir());
 		mntmSalvar.addActionListener(new ActionSalvar());
 		mntmGreyscale.addActionListener(new ActionGreyScale());
@@ -57,18 +65,18 @@ public class TelaPrincipal extends TelaPrincipalView {
 	public static void main(String[] args) {
 		new TelaPrincipal().setVisible(true);
 	}
-	
-	private class ActionLimiarizacao extends AbstractAction{
+
+	private class ActionLimiarizacao extends AbstractAction {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getSelectedComponent();
 			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
-			new TelaLimiarizacao(imagePanel).setVisible(true);;
+			new TelaLimiarizacao(imagePanel).setVisible(true);
 		}
-		
+
 	}
-	
+
 	private class ActionHistograma extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -125,25 +133,22 @@ public class TelaPrincipal extends TelaPrincipalView {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (Arquivo != null) {
-				String path = "C:\\Users\\J.C\\Desktop\\imgs\\";
-				String name = "";
+				String path = "";
 				String ext = ".bmp";
-				JFileChooser j = new JFileChooser(path);
+				JFileChooser j = new JFileChooser();
 				File img = null;
 				int oi = j.showSaveDialog(null);
 				if (oi == JFileChooser.APPROVE_OPTION) {
-					name = j.getSelectedFile().getName();
-
+					path = j.getSelectedFile().getAbsoluteFile().toString();
+					System.out.println(path);
 				} else {
 					return;
 				}
 				int auxinc = 1;
 
-				String nameAux = name;
-
 				// cria file com nome certo
 				while (true) {
-					img = new File(path + nameAux + ext);
+					img = new File(path + ext);
 					if (!img.exists()) {
 						try {
 							img.createNewFile();
@@ -154,15 +159,21 @@ public class TelaPrincipal extends TelaPrincipalView {
 						} catch (IOException ex) {
 							Logger.getLogger(TelaPrincipalView.class.getName()).log(Level.SEVERE, null, ex);
 						}
-						System.out.println("FODEO");
+						System.out.println("Não Salvou");
 						break;
 					} else {
-						nameAux = name + auxinc;
+						path = path + auxinc;
 						auxinc++;
 					}
 				}
-
-				Arquivo.Salvar(img);
+				JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
+				ImagePanel imagePanel = (ImagePanel) scroll.getViewport().getView();
+				BufferedImage grid = imagePanel.getGrid();
+				try {
+					ImageIO.write(grid, "bmp", img);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
 
 		}
@@ -176,43 +187,37 @@ public class TelaPrincipal extends TelaPrincipalView {
 		public void actionPerformed(ActionEvent e) {
 			JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
 			imagePanel = (ImagePanel) scroll.getViewport().getView();
-			if (imagePanel != null && Arquivo != null) {
-				Arquivo.getmPixel().grayScale();
-				imagePanel.reset();
-				imagePanel.update();
-			} else {
-				System.out.println("FODEO");
-			}
+			BufferedImageOp grayscaleConv = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+			BufferedImage src = grayscaleConv.filter(imagePanel.getGrid(), null);
+			imagePanel.setGrid(src);
+			imagePanel.update();
 		}
 
 	}
 
 	private class ActionPassaAlta extends AbstractAction {
-		ImagePanel imagePanel;
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
-			imagePanel = (ImagePanel) scroll.getViewport().getView();
-			if (imagePanel != null && Arquivo != null) {
-				Arquivo.getmPixel().passaAlta();
-				imagePanel.reset();
-				imagePanel.update();
-			} else {
-				System.out.println("FODEO");
-			}
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getSelectedComponent();
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
+
+			BufferedImage grid = imagePanel.getGrid();
+
+			imagePanel.setGrid(passaAlta(grid));
+			imagePanel.update();
 		}
 
 	}
 
-	private class ActionOperacoes extends AbstractAction{
+	private class ActionOperacoes extends AbstractAction {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			new TelaOperacoes(tabbedPane).setVisible(true);
-			
+
 		}
-		
+
 	}
 
 	public void addClosableTab(final JTabbedPane tabbedPane, final JComponent c, final String title, final Icon icon) {
@@ -295,5 +300,27 @@ public class TelaPrincipal extends TelaPrincipalView {
 		// Now add a single binding for the action name to the anonymous action
 		c.getActionMap().put("closeTab", closeTabAction);
 	}
+
+	public BufferedImage passaAlta(BufferedImage src) {
+		BufferedImageOp grayscaleConv = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+		src = grayscaleConv.filter(src, null);
+		
+		float f = (float) 0.5;
+		ImageFFT fft = null;
+
+		try {
+			fft = new ImageFFT(src);
+			fft.transform();
+			fft.butterworthHighPassFilter(f);
+			fft.transform();
+			return fft.toImage(null);
+		} catch (FFTException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+	
+	
 
 }

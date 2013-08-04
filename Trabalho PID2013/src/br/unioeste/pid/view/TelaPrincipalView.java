@@ -17,9 +17,6 @@ public class TelaPrincipalView extends JFrame {
 	protected JMenuItem mntmSalvar;
 	protected JMenu mnImagem;
 	protected JMenuItem mntmGreyscale;
-	protected JMenu mnConverter;
-	protected JMenuItem mntmbits;
-	protected JMenuItem mntmbits_1;
 	protected JMenu mnExibir;
 	protected JMenuItem mntmHistograma;
 	protected JTabbedPane tabbedPane;
@@ -59,26 +56,12 @@ public class TelaPrincipalView extends JFrame {
 		this.mntmLimiarizao = new JMenuItem("Limiariza\u00E7\u00E3o");
 		this.mnImagem.add(this.mntmLimiarizao);
 		
-		mnConverter = new JMenu("Converter");
-		mnImagem.add(mnConverter);
-		
-		mntmbits = new JMenuItem("24Bits");
-		mnConverter.add(mntmbits);
-		
-		mntmbits_1 = new JMenuItem("8Bits");
-		mnConverter.add(mntmbits_1);
-		
 		this.mnFiltro = new JMenu("Filtro");
 		this.mnImagem.add(this.mnFiltro);
 		
 		this.mntmPassaalta = new JMenuItem("Passa-Alta");
 		this.mnFiltro.add(this.mntmPassaalta);
 		
-		mnExibir = new JMenu("Exibir");
-		menuBar.add(mnExibir);
-		
-		mntmHistograma = new JMenuItem("Histograma");
-		mnExibir.add(mntmHistograma);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0};

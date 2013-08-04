@@ -111,11 +111,7 @@ public class Image {
 				return null;
 			}
 
-			@Override
-			public Color[][] getMatrix() {
-				// TODO Auto-generated method stub
-				return null;
-			}
+
 		}; 
         //Altura e Largura da imagem
         Width = 0;
@@ -324,5 +320,6 @@ public class Image {
     public void Salvar(File Img) {
         mPixel.salvarImagem(Img);
     }
+    
 
 }

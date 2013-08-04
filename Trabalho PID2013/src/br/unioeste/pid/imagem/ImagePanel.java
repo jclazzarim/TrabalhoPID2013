@@ -18,27 +18,17 @@ public class ImagePanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
-
 		if (getGrid() == null && imagem != null) {
 
 			setGrid((BufferedImage) (this.createImage(imagem.getWidth(),
 					imagem.getHeight())));
 			imagem.getmPixel().pintarImagem(getGrid().createGraphics());
-
 		}
-
 		g2.drawImage(getGrid(), null, 0, 0);
-
-		// if (imagem != null) {
-		// imagem.getmPixel().paintPixel(g, imagem.getHeight(),
-		// imagem.getWidth());
-		// }
-
 	}
 
 	public void update() {
 		this.paintComponent(this.getGraphics());
-
 	}
 
 	public Image getImagem() {

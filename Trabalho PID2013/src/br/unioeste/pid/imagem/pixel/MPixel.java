@@ -23,5 +23,4 @@ public interface MPixel {
 
     public IntervalXYDataset getHistograma();
     
-    public Color[][] getMatrix();
 }
