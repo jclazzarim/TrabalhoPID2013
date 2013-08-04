@@ -10,9 +10,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import br.unioeste.pid.imagem.Image;
+import br.unioeste.pid.utils.PixelUtils;
 import br.unioeste.pid.imagem.ImagePanel;
-import br.unioeste.pid.imagem.pixel.MPixel;
 import br.unioeste.pid.view.TelaOperacoesView;
 
 public class TelaOperacoes extends TelaOperacoesView {
@@ -23,7 +22,8 @@ public class TelaOperacoes extends TelaOperacoesView {
 	private static final int AND = 3;
 	private String[] nomes;
 	private JTabbedPane painel;
-
+	private PixelUtils utils = new PixelUtils();
+	
 	public TelaOperacoes(JTabbedPane painel) {
 		this.painel = painel;
 		setNomes();
@@ -57,17 +57,16 @@ public class TelaOperacoes extends TelaOperacoesView {
 			switch (cbOperacoes.getSelectedIndex()) {
 
 			case OR:
-				System.out.println("OR");
+				OR();
 				break;
 			case XOR:
-				System.out.println("XOR");
+				XOR();
 				break;
 			case NOT:
 				NOT();
-				System.out.println("NOT");
 				break;
 			case AND:
-				System.out.println("AND");
+				AND();
 				break;
 			default:
 				break;
@@ -81,11 +80,10 @@ public class TelaOperacoes extends TelaOperacoesView {
 		int imagemSelecioanda = cbImagem1.getSelectedIndex();
 		JScrollPane scrollPanel = (JScrollPane) painel.getComponentAt(imagemSelecioanda);
 		ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
-		
+
 		BufferedImage grid = imagePanel.getGrid();
 		int width = grid.getWidth();
 		int height = grid.getHeight();
-		imagePanel.reset();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				int rgb = grid.getRGB(i, j); // a cor inversa é dado por 255
@@ -100,6 +98,98 @@ public class TelaOperacoes extends TelaOperacoesView {
 		imagePanel.setGrid(grid);
 		imagePanel.update();
 
+	}
+
+	private void OR() {
+		int imagem1 = cbImagem1.getSelectedIndex();
+		int imagem2 = cbImagem2.getSelectedIndex();
+
+		JScrollPane scrollPanel1 = (JScrollPane) painel.getComponentAt(imagem1);
+		JScrollPane scrollPanel2 = (JScrollPane) painel.getComponentAt(imagem2);
+
+		ImagePanel imagePanel1 = (ImagePanel) scrollPanel1.getViewport().getView();
+		ImagePanel imagePanel2 = (ImagePanel) scrollPanel2.getViewport().getView();
+
+		BufferedImage grid1 = imagePanel1.getGrid();
+		BufferedImage grid2 = imagePanel2.getGrid();
+
+		if (grid1.getHeight() == grid2.getHeight() && grid1.getWidth() == grid2.getWidth()) {
+			BufferedImage retorno = new BufferedImage(grid1.getWidth(), grid1.getHeight(), grid1.getType());	
+			for (int i = 0; i < grid1.getHeight(); i++) {
+				for (int j = 0; j < grid1.getWidth(); j++) {
+					int rgb = grid1.getRGB(i, j) | grid2.getRGB(i, j);
+					retorno.setRGB(i, j, rgb);
+					
+				}
+			}
+			ImagePanel img = new ImagePanel();
+			img.setGrid(retorno);
+			JScrollPane scroll = new JScrollPane(img);
+			utils.addClosableTab(painel, scroll, "Nova Imagem", null);
+			img.update();
+		}
+		
+
+	}
+	
+	private void XOR(){
+		int imagem1 = cbImagem1.getSelectedIndex();
+		int imagem2 = cbImagem2.getSelectedIndex();
+
+		JScrollPane scrollPanel1 = (JScrollPane) painel.getComponentAt(imagem1);
+		JScrollPane scrollPanel2 = (JScrollPane) painel.getComponentAt(imagem2);
+
+		ImagePanel imagePanel1 = (ImagePanel) scrollPanel1.getViewport().getView();
+		ImagePanel imagePanel2 = (ImagePanel) scrollPanel2.getViewport().getView();
+
+		BufferedImage grid1 = imagePanel1.getGrid();
+		BufferedImage grid2 = imagePanel2.getGrid();
+
+		if (grid1.getHeight() == grid2.getHeight() && grid1.getWidth() == grid2.getWidth()) {
+			BufferedImage retorno = new BufferedImage(grid1.getWidth(), grid1.getHeight(), grid1.getType());	
+			for (int i = 0; i < grid1.getHeight(); i++) {
+				for (int j = 0; j < grid1.getWidth(); j++) {
+					int rgb = grid1.getRGB(i, j) ^ grid2.getRGB(i, j);
+					retorno.setRGB(i, j, rgb);
+					
+				}
+			}
+			ImagePanel img = new ImagePanel();
+			img.setGrid(retorno);
+			JScrollPane scroll = new JScrollPane(img);
+			utils.addClosableTab(painel, scroll, "Nova Imagem", null);
+			img.update();
+		}
+	}
+	
+	private void AND(){
+		int imagem1 = cbImagem1.getSelectedIndex();
+		int imagem2 = cbImagem2.getSelectedIndex();
+
+		JScrollPane scrollPanel1 = (JScrollPane) painel.getComponentAt(imagem1);
+		JScrollPane scrollPanel2 = (JScrollPane) painel.getComponentAt(imagem2);
+
+		ImagePanel imagePanel1 = (ImagePanel) scrollPanel1.getViewport().getView();
+		ImagePanel imagePanel2 = (ImagePanel) scrollPanel2.getViewport().getView();
+
+		BufferedImage grid1 = imagePanel1.getGrid();
+		BufferedImage grid2 = imagePanel2.getGrid();
+
+		if (grid1.getHeight() == grid2.getHeight() && grid1.getWidth() == grid2.getWidth()) {
+			BufferedImage retorno = new BufferedImage(grid1.getWidth(), grid1.getHeight(), grid1.getType());	
+			for (int i = 0; i < grid1.getHeight(); i++) {
+				for (int j = 0; j < grid1.getWidth(); j++) {
+					int rgb = grid1.getRGB(i, j) & grid2.getRGB(i, j);
+					retorno.setRGB(i, j, rgb);
+					
+				}
+			}
+			ImagePanel img = new ImagePanel();
+			img.setGrid(retorno);
+			JScrollPane scroll = new JScrollPane(img);
+			utils.addClosableTab(painel, scroll, "Nova Imagem", null);
+			img.update();
+		}
 	}
 
 }
