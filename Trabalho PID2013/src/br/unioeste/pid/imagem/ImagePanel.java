@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 
 public class ImagePanel extends JPanel {
 	Image imagem;
-	BufferedImage grid;
+	private BufferedImage grid;
 
 	public ImagePanel() {
 		imagem = null;
@@ -19,15 +19,15 @@ public class ImagePanel extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 
-		if (grid == null && imagem != null) {
+		if (getGrid() == null && imagem != null) {
 
-			grid = (BufferedImage) (this.createImage(imagem.getWidth(),
-					imagem.getHeight()));
-			imagem.getmPixel().pintarImagem(grid.createGraphics());
+			setGrid((BufferedImage) (this.createImage(imagem.getWidth(),
+					imagem.getHeight())));
+			imagem.getmPixel().pintarImagem(getGrid().createGraphics());
 
 		}
 
-		g2.drawImage(grid, null, 0, 0);
+		g2.drawImage(getGrid(), null, 0, 0);
 
 		// if (imagem != null) {
 		// imagem.getmPixel().paintPixel(g, imagem.getHeight(),
@@ -50,6 +50,14 @@ public class ImagePanel extends JPanel {
 	}
 
 	public void reset() {
-		grid = null;
+		setGrid(null);
+	}
+
+	public BufferedImage getGrid() {
+		return grid;
+	}
+
+	public void setGrid(BufferedImage grid) {
+		this.grid = grid;
 	}
 }

@@ -1,5 +1,6 @@
 package br.unioeste.pid.imagem;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.FileInputStream;
@@ -106,6 +107,12 @@ public class Image {
 			
 			@Override
 			public IntervalXYDataset getHistograma() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Color[][] getMatrix() {
 				// TODO Auto-generated method stub
 				return null;
 			}

@@ -27,6 +27,7 @@ public class TelaPrincipalView extends JFrame {
 	protected JMenu mnFiltro;
 	protected JMenuItem mntmPassaalta;
 	protected JMenuItem mntmOperaes;
+	protected JMenuItem mntmLimiarizao;
 	
 	public TelaPrincipalView() {
 		initGUI();
@@ -54,6 +55,9 @@ public class TelaPrincipalView extends JFrame {
 		
 		this.mntmOperaes = new JMenuItem("Opera\u00E7\u00F5es");
 		this.mnImagem.add(this.mntmOperaes);
+		
+		this.mntmLimiarizao = new JMenuItem("Limiariza\u00E7\u00E3o");
+		this.mnImagem.add(this.mntmLimiarizao);
 		
 		mnConverter = new JMenu("Converter");
 		mnImagem.add(mnConverter);

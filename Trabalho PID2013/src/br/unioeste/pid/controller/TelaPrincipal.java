@@ -51,12 +51,24 @@ public class TelaPrincipal extends TelaPrincipalView {
 		mntmGreyscale.addActionListener(new ActionGreyScale());
 		mntmPassaalta.addActionListener(new ActionPassaAlta());
 		mntmOperaes.addActionListener(new ActionOperacoes());
+		mntmLimiarizao.addActionListener(new ActionLimiarizacao());
 	}
 
 	public static void main(String[] args) {
 		new TelaPrincipal().setVisible(true);
 	}
+	
+	private class ActionLimiarizacao extends AbstractAction{
 
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getSelectedComponent();
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
+			new TelaLimiarizacao(imagePanel).setVisible(true);;
+		}
+		
+	}
+	
 	private class ActionHistograma extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -90,7 +102,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 				JScrollPane scroll = new JScrollPane();
 				scroll.setViewportView(imagePanel);
 				addClosableTab(tabbedPane, scroll, file.getName(), null);
-
+				imagePanel.setName(file.getName());
 				imagePanel.setPreferredSize(new Dimension(Arquivo.getWidth(), Arquivo.getHeight()));
 				imagePanel.setSize(new Dimension(Arquivo.getWidth(), Arquivo.getHeight()));
 				imagePanel.setImagem(Arquivo);
@@ -197,7 +209,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			new TelaOperacoes().setVisible(true);
+			new TelaOperacoes(tabbedPane).setVisible(true);
 			
 		}
 		
@@ -205,7 +217,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 
 	public void addClosableTab(final JTabbedPane tabbedPane, final JComponent c, final String title, final Icon icon) {
 		// Add the tab to the pane without any label
-		tabbedPane.addTab(null, c);
+		tabbedPane.addTab(title, c);
 		int pos = tabbedPane.indexOfComponent(c);
 
 		// Create a FlowLayout that will space things 5px apart

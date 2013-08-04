@@ -1,7 +1,7 @@
 package br.unioeste.pid.imagem.pixel;
 
+import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,4 +22,6 @@ public interface MPixel {
     public void salvarImagem(File img);
 
     public IntervalXYDataset getHistograma();
+    
+    public Color[][] getMatrix();
 }

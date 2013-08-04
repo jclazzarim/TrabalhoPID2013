@@ -218,4 +218,10 @@ public class MPixel24B implements MPixel {
 		return null;
 	}
 
+	@Override
+	public Color[][] getMatrix() {
+		return MPixel;
+	}
+
+
 }
