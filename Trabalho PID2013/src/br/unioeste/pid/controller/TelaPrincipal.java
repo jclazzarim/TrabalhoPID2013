@@ -46,7 +46,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 		mntmGreyscale.addActionListener(new ActionGreyScale());
 		mntmPassaalta.addActionListener(new ActionPassaAlta());
 		mntmOperaes.addActionListener(new ActionOperacoes());
-		mntmLimiarizao.addActionListener(new ActionLimiarizacao());
+		mntmLimiarizao.addActionListener(new ActionLimiarizacao()); 
 	}
 
 	public static void main(String[] args) {
@@ -108,7 +108,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 				}
 			} catch (FileNotFoundException ex) {
 				Logger.getLogger(TelaPrincipalView.class.getName()).log(Level.SEVERE, null, ex);
-				JOptionPane.showMessageDialog(null, "Erro Fatal: Não foi possível abrir o arquivo da imagem.\n" + ex);
+				JOptionPane.showMessageDialog(null, "Erro Fatal: Nï¿½o foi possï¿½vel abrir o arquivo da imagem.\n" + ex);
 			}
 
 		}
@@ -146,7 +146,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 						} catch (IOException ex) {
 							Logger.getLogger(TelaPrincipalView.class.getName()).log(Level.SEVERE, null, ex);
 						}
-						System.out.println("Não Salvou");
+						System.out.println("Nï¿½o Salvou");
 						break;
 					} else {
 						path = path + auxinc;
