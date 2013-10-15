@@ -57,7 +57,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getSelectedComponent();
+			int selectedIndex = tabbedPane.getSelectedIndex();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
 			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 			new TelaLimiarizacao(imagePanel).setVisible(true);
 		}
@@ -153,7 +154,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 						auxinc++;
 					}
 				}
-				JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
+				int selectedIndex = tabbedPane.getSelectedIndex();
+				JScrollPane scroll = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
 				ImagePanel imagePanel = (ImagePanel) scroll.getViewport().getView();
 				BufferedImage grid = imagePanel.getGrid();
 				try {

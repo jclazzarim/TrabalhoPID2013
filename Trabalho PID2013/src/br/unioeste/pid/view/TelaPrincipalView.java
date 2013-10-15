@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JScrollPane;
+import java.awt.Window.Type;
 
 public class TelaPrincipalView extends JFrame {
 
@@ -31,6 +32,7 @@ public class TelaPrincipalView extends JFrame {
 	}
 	
 	private void initGUI() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);

@@ -82,6 +82,7 @@ public class TelaOperacoes extends TelaOperacoesView {
 		ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 
 		BufferedImage grid = imagePanel.getGrid();
+		BufferedImage negada = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		int width = grid.getWidth();
 		int height = grid.getHeight();
 		for (int i = 0; i < width; i++) {
@@ -92,10 +93,10 @@ public class TelaOperacoes extends TelaOperacoesView {
 				int g = 255 - (int) ((rgb & 0x0000FF00) >>> 8);
 				int b = 255 - (int) (rgb & 0x000000FF);
 				Color color = new Color(r, g, b);
-				grid.setRGB(i, j, color.getRGB());
+				negada.setRGB(i, j, color.getRGB());
 			}
 		}
-		imagePanel.setGrid(grid);
+		imagePanel.setGrid(negada);
 		imagePanel.update();
 
 	}
@@ -117,8 +118,8 @@ public class TelaOperacoes extends TelaOperacoesView {
 			BufferedImage retorno = new BufferedImage(grid1.getWidth(), grid1.getHeight(), grid1.getType());	
 			for (int i = 0; i < grid1.getHeight(); i++) {
 				for (int j = 0; j < grid1.getWidth(); j++) {
-					int rgb = grid1.getRGB(i, j) | grid2.getRGB(i, j);
-					retorno.setRGB(i, j, rgb);
+					int rgb = grid1.getRGB(j, i) | grid2.getRGB(j, i);
+					retorno.setRGB(j, i, rgb);
 					
 				}
 			}
@@ -149,8 +150,8 @@ public class TelaOperacoes extends TelaOperacoesView {
 			BufferedImage retorno = new BufferedImage(grid1.getWidth(), grid1.getHeight(), grid1.getType());	
 			for (int i = 0; i < grid1.getHeight(); i++) {
 				for (int j = 0; j < grid1.getWidth(); j++) {
-					int rgb = grid1.getRGB(i, j) ^ grid2.getRGB(i, j);
-					retorno.setRGB(i, j, rgb);
+					int rgb = grid1.getRGB(j, i) ^ grid2.getRGB(j, i);
+					retorno.setRGB(j, i, rgb);
 					
 				}
 			}
@@ -179,8 +180,8 @@ public class TelaOperacoes extends TelaOperacoesView {
 			BufferedImage retorno = new BufferedImage(grid1.getWidth(), grid1.getHeight(), grid1.getType());	
 			for (int i = 0; i < grid1.getHeight(); i++) {
 				for (int j = 0; j < grid1.getWidth(); j++) {
-					int rgb = grid1.getRGB(i, j) & grid2.getRGB(i, j);
-					retorno.setRGB(i, j, rgb);
+					int rgb = grid1.getRGB(j, i) & grid2.getRGB(j, i);
+					retorno.setRGB(j, i, rgb);
 					
 				}
 			}
