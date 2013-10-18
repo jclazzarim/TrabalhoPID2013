@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorConvertOp;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -47,12 +48,75 @@ public class TelaPrincipal extends TelaPrincipalView {
 		mntmPassaalta.addActionListener(new ActionPassaAlta());
 		mntmOperaes.addActionListener(new ActionOperacoes());
 		mntmLimiarizao.addActionListener(new ActionLimiarizacao()); 
+		mntmDilatao.addActionListener(new ActionDilatacao());
+		mntmEroso.addActionListener(new ActionErosao());
+		mntmAbertura.addActionListener(new ActionAbertura());
+		mntmFechamento.addActionListener(new ActionFechamento());
 	}
 
 	public static void main(String[] args) {
 		new TelaPrincipal().setVisible(true);
 	}
 
+	private class ActionDilatacao extends AbstractAction{
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			int selectedIndex = tabbedPane.getSelectedIndex();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
+			imagePanel.setGrid(utils.dilatacao(imagePanel.getGrid()));
+			imagePanel.update();
+			System.out.println("Finale");
+			
+		}
+		
+	}
+
+	private class ActionAbertura extends AbstractAction{
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			int selectedIndex = tabbedPane.getSelectedIndex();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
+			imagePanel.setGrid(utils.abertura(imagePanel.getGrid()));
+			imagePanel.update();
+			System.out.println("Finale");
+			
+		}
+		
+	}
+
+	private class ActionFechamento extends AbstractAction{
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			int selectedIndex = tabbedPane.getSelectedIndex();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
+			imagePanel.setGrid(utils.fechamento(imagePanel.getGrid()));
+			imagePanel.update();
+			System.out.println("Finale");
+			
+		}
+		
+	}
+	
+	private class ActionErosao extends AbstractAction{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			int selectedIndex = tabbedPane.getSelectedIndex();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
+			imagePanel.setGrid(utils.erosao(imagePanel.getGrid()));
+			imagePanel.update();
+			System.out.println("Finale");			
+		}
+		
+	}
+	
 	private class ActionLimiarizacao extends AbstractAction {
 
 		@Override
@@ -192,7 +256,6 @@ public class TelaPrincipal extends TelaPrincipalView {
 			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 
 			BufferedImage grid = imagePanel.getGrid();
-
 			imagePanel.setGrid(utils.passaAlta(grid));
 			imagePanel.update();
 		}

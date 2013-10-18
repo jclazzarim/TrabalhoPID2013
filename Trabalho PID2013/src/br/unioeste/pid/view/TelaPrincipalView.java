@@ -26,6 +26,10 @@ public class TelaPrincipalView extends JFrame {
 	protected JMenuItem mntmPassaalta;
 	protected JMenuItem mntmOperaes;
 	protected JMenuItem mntmLimiarizao;
+	protected JMenuItem mntmDilatao;
+	protected JMenuItem mntmEroso;
+	protected JMenuItem mntmAbertura;
+	protected JMenuItem mntmFechamento;
 	
 	public TelaPrincipalView() {
 		initGUI();
@@ -63,6 +67,18 @@ public class TelaPrincipalView extends JFrame {
 		
 		this.mntmPassaalta = new JMenuItem("Passa-Alta");
 		this.mnFiltro.add(this.mntmPassaalta);
+		
+		this.mntmDilatao = new JMenuItem("Dilata\u00E7\u00E3o");
+		this.mnFiltro.add(this.mntmDilatao);
+		
+		mntmEroso = new JMenuItem("Eros\u00E3o");
+		mnFiltro.add(mntmEroso);
+		
+		mntmAbertura = new JMenuItem("Abertura");
+		mnFiltro.add(mntmAbertura);
+		
+		mntmFechamento = new JMenuItem("Fechamento");
+		mnFiltro.add(mntmFechamento);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0};
