@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
+import br.unioeste.pid.imagem.ImagePanel;
+
 import com.jgoodies.looks.common.RGBGrayFilter;
 import com.pearsoneduc.ip.op.FFTException;
 import com.pearsoneduc.ip.op.ImageFFT;
@@ -37,14 +39,14 @@ public class PixelUtils {
 	public PixelUtils() {
 	}
 
-	public BufferedImage abertura(BufferedImage grid){
+	public BufferedImage abertura(BufferedImage grid) {
 		return dilatacao(erosao(grid));
 	}
 
-	public BufferedImage fechamento(BufferedImage grid){
+	public BufferedImage fechamento(BufferedImage grid) {
 		return erosao(dilatacao(grid));
 	}
-	
+
 	public BufferedImage passaAlta(BufferedImage src) {
 		BufferedImageOp grayscaleConv = new ColorConvertOp(
 				ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
@@ -235,6 +237,36 @@ public class PixelUtils {
 			}
 		}
 		return novaMatriz;
+	}
+
+	public BufferedImage greyScale(BufferedImage grid) {
+		BufferedImageOp grayscaleConv = new ColorConvertOp(
+				ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+		return grayscaleConv.filter(grid, null);
+	}
+
+	public BufferedImage limiar(BufferedImage image, int limiar) {
+		BufferedImage imageLimiar = new BufferedImage(image.getWidth(),
+				image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		int width = image.getWidth();
+		int height = image.getHeight();
+
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				int rgb = image.getRGB(i, j);
+				int r = (int) ((rgb & 0x00FF0000) >>> 16);
+				int g = (int) ((rgb & 0x0000FF00) >>> 8);
+				int b = (int) (rgb & 0x000000FF);
+				int media = (r + g + b) / 3;
+				Color white = new Color(255, 255, 255);
+				Color black = new Color(0, 0, 0);
+				if (media < limiar)
+					imageLimiar.setRGB(i, j, black.getRGB());
+				else
+					imageLimiar.setRGB(i, j, white.getRGB());
+			}
+		}
+		return imageLimiar;
 	}
 
 }

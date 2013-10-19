@@ -13,6 +13,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import br.unioeste.pid.imagem.ImagePanel;
+import br.unioeste.pid.utils.PixelUtils;
 import br.unioeste.pid.view.TelaLimiarizacaoView;
 
 public class TelaLimiarizacao extends TelaLimiarizacaoView {
@@ -44,10 +45,12 @@ public class TelaLimiarizacao extends TelaLimiarizacaoView {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			BufferedImageOp grayscaleConv = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
-			BufferedImage src = grayscaleConv.filter(image.getGrid(), null);
+			PixelUtils utils = new PixelUtils();
+			BufferedImage src = utils.greyScale(image.getGrid());
 			image.setGrid(src);
-			limiar(image, jsLimiar.getValue());
+			src = utils.limiar(image.getGrid(), jsLimiar.getValue());
+			image.setGrid(src);
+			image.update();
 			dispose();
 		}
 
@@ -62,28 +65,5 @@ public class TelaLimiarizacao extends TelaLimiarizacaoView {
 
 	}
 
-	public void limiar(ImagePanel imagePanel, int limiar) {
-		BufferedImage image = imagePanel.getGrid();
-		BufferedImage imageLimiar = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-		int width = image.getWidth();
-		int height = image.getHeight();
-		imagePanel.reset();
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				int rgb = image.getRGB(i, j);
-				int r = (int) ((rgb & 0x00FF0000) >>> 16);
-				int g = (int) ((rgb & 0x0000FF00) >>> 8);
-				int b = (int) (rgb & 0x000000FF);
-				int media = (r + g + b) / 3;
-				Color white = new Color(255, 255, 255);
-				Color black = new Color(0, 0, 0);
-				if (media < limiar)
-					imageLimiar.setRGB(i, j, black.getRGB());
-				else
-					imageLimiar.setRGB(i, j, white.getRGB());
-			}
-		}
-		imagePanel.setGrid(imageLimiar);
-		imagePanel.update();
-	}
+	
 }
