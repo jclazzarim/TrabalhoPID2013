@@ -10,8 +10,100 @@ import br.unioeste.pid.imagem.ImagePanel;
 
 public class TelaUtils {
 
-	private void verificaImagem(BufferedImage imagem) {
-		 
+	private int[][] reds;
+	private int[][] greens;
+	private int[][] blues;
+
+	public BufferedImage verificaImagem(BufferedImage imagem, int x, int y) {
+		PixelUtils utils = new PixelUtils();
+
+		BufferedImage greyScale = utils.greyScale(imagem);
+		int[] rgb = getRgb(greyScale, imagem.getWidth(), imagem.getHeight());
+		int w = imagem.getWidth();
+		int h = imagem.getHeight();
+
+		int rr = 0;
+
+		for (int i = 0; i < w * h; i++) {
+			rr += getRed(rgb[i]);
+		}
+		rr = (int) (rr / (w * h));
+
+		if (rr > 100) {
+			return processaCelulaRoxa(imagem);
+		} else {
+			return processaCelulaColorida(imagem, x, y);
+		}
+
+	}
+
+	public int[] getColorImagem(int x, int y, BufferedImage imagem) {
+		PixelUtils utils = new PixelUtils();
+		imagem = utils.erosao(imagem);
+		imagem = utils.erosao(imagem);
+		imagem = utils.erosao(imagem);
+
+		int rgb = imagem.getRGB(x, y);
+
+		int blue = getBlue(rgb);
+		int green = getGreen(rgb);
+		int red = getRed(rgb);
+
+		if (blue > green && blue > red) {
+			return getBlues(getRgb(imagem, imagem.getWidth(),
+					imagem.getHeight()));
+		}
+
+		if (red > green && blue < red) {
+			return getReds(getRgb(imagem, imagem.getWidth(), imagem.getHeight()));
+		}
+
+		if (blue < green && green > red) {
+			return getGreens(getRgb(imagem, imagem.getWidth(),
+					imagem.getHeight()));
+		}
+		return null;
+
+	}
+
+	private int pegaFundo(int[] r, int[] g, int[] b) {
+		int soma = 0;
+		int mR = 0;
+		int mG = 0;
+		int mB = 0;
+
+		for (int i = 0; i < r.length; i++) {
+			soma += r[i];
+		}
+		mR = soma;
+
+		soma = 0;
+		for (int i = 0; i < g.length; i++) {
+			soma += g[i];
+		}
+		mG = soma;
+
+		soma = 0;
+		for (int i = 0; i < b.length; i++) {
+			soma += b[i];
+		}
+		mB = soma;
+
+		float mg = mG / 255;
+		float mb = mB / 255;
+		float mr = mR / 255;
+
+		if (mg > mb && mg > mr) {
+			return 2;
+		}
+		if (mb > mg && mb > mr) {
+			return 3;
+		}
+		if (mr > mb && mr > mg) {
+			return 1;
+		}
+
+		return 2;
 	}
 
 	private int[] getRgb(BufferedImage imagem, int w, int h) {
@@ -27,15 +119,18 @@ public class TelaUtils {
 		return rgb;
 	}
 
-	public BufferedImage destacaCell(final BufferedImage imagem) {
+	public BufferedImage processaCelulaColorida(final BufferedImage imagem,
+			int x, int y) {
 
 		int w = imagem.getWidth();
 		int h = imagem.getHeight();
 		int[] rgb = getRgb(imagem, w, h);
 		int aux = 0;
+		// int[] corCelula = verificaImagem(imagem);
+		int[] corCelula = getColorImagem(x, y, imagem);
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				imagem.setRGB(i, j, setRGB(getBlue(rgb[aux]), 0, 0));
+				imagem.setRGB(i, j, setRGB(corCelula[aux], 0, 0));
 				aux++;
 			}
 		}
@@ -47,19 +142,7 @@ public class TelaUtils {
 		grid = utils.erosao(grid);
 		grid = sobel(grid);
 
-		BufferedImage negada = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++) {
-				int cor = grid.getRGB(i, j); 
-				int b = 255 - (int) ((cor & 0x00FF0000) >>> 16);
-				int g = 255 - (int) ((cor & 0x0000FF00) >>> 8);
-				int r = 255 - (int) (cor & 0x000000FF);
-				Color color = new Color(r, g, b);
-				negada.setRGB(i, j, color.getRGB());
-			}
-		}
-
-		return negada;
+		return negar(grid);
 	}
 
 	private BufferedImage otsu(BufferedImage imagem) {
@@ -125,12 +208,41 @@ public class TelaUtils {
 		return (int) (rgb & 0x000000FF);
 	}
 
+	private int[] getBlues(int[] rgb) {
+		int[] blues = new int[rgb.length];
+		for (int i = 0; i < rgb.length; i++) {
+			blues[i] = getBlue(rgb[i]);
+		}
+		return blues;
+	}
+
+	private int[] getGreens(int[] rgb) {
+		int[] greens = new int[rgb.length];
+		for (int i = 0; i < rgb.length; i++) {
+			greens[i] = getGreen(rgb[i]);
+		}
+		return greens;
+	}
+
+	private int[] getReds(int[] rgb) {
+		int[] reds = new int[rgb.length];
+		for (int i = 0; i < rgb.length; i++) {
+			reds[i] = getRed(rgb[i]);
+		}
+		return reds;
+	}
+
 	private int getRed(int rgb) {
 		return (int) ((rgb & 0x00FF0000) >>> 16);
 	}
 
+	private int getGreen(int rgb) {
+		return (int) ((rgb & 0x0000FF00) >>> 8);
+	}
+
 	private int setRGB(int r, int g, int b) {
-		return ((255 & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0);
+		return ((255 & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8)
+				| ((b & 0xFF) << 0);
 	}
 
 	public BufferedImage sobel(BufferedImage image) {
@@ -161,7 +273,8 @@ public class TelaUtils {
 		return processaPassaAlta(image, mascaraHorizontal, mascaraVertical);
 	}
 
-	public BufferedImage processaPassaAlta(BufferedImage image, int mascaraHorizontal[][], int mascaraVertical[][]) {
+	private BufferedImage processaPassaAlta(BufferedImage image,
+			int mascaraHorizontal[][], int mascaraVertical[][]) {
 		int aux;
 		int w = image.getWidth();
 		int h = image.getHeight();
@@ -200,17 +313,28 @@ public class TelaUtils {
 		for (int i = 1; i <= w; i++) {
 			for (int j = 1; j <= h; j++) {
 
-				vertical = getRed(xy[i - 1][j - 1]) * mascaraVertical[0][0] + getRed(xy[i - 1][j]) * mascaraVertical[0][1] + getRed(xy[i - 1][+j])
-						* mascaraVertical[0][2] + getRed(xy[i][j]) * mascaraVertical[1][0] + getRed(xy[i][j - 1]) * mascaraVertical[1][1]
-						+ getRed(xy[i][j + 1]) * mascaraVertical[1][2] + getRed(xy[i + 1][j - 1]) * mascaraVertical[2][0] + getRed(xy[i + 1][j])
-						* mascaraVertical[2][1] + getRed(xy[i + 1][j + 1]) * mascaraVertical[2][2];
+				vertical = getRed(xy[i - 1][j - 1]) * mascaraVertical[0][0]
+						+ getRed(xy[i - 1][j]) * mascaraVertical[0][1]
+						+ getRed(xy[i - 1][+j]) * mascaraVertical[0][2]
+						+ getRed(xy[i][j]) * mascaraVertical[1][0]
+						+ getRed(xy[i][j - 1]) * mascaraVertical[1][1]
+						+ getRed(xy[i][j + 1]) * mascaraVertical[1][2]
+						+ getRed(xy[i + 1][j - 1]) * mascaraVertical[2][0]
+						+ getRed(xy[i + 1][j]) * mascaraVertical[2][1]
+						+ getRed(xy[i + 1][j + 1]) * mascaraVertical[2][2];
 
-				horizontal = getRed(xy[i - 1][j - 1]) * mascaraHorizontal[0][0] + getRed(xy[i - 1][j]) * mascaraHorizontal[0][1] + getRed(xy[i - 1][+j])
-						* mascaraHorizontal[0][2] + getRed(xy[i][j]) * mascaraHorizontal[1][0] + getRed(xy[i][j - 1]) * mascaraHorizontal[1][1]
-						+ getRed(xy[i][j + 1]) * mascaraHorizontal[1][2] + getRed(xy[i + 1][j - 1]) * mascaraHorizontal[2][0] + getRed(xy[i + 1][j])
-						* mascaraHorizontal[2][1] + getRed(xy[i + 1][j + 1]) * mascaraHorizontal[2][2];
+				horizontal = getRed(xy[i - 1][j - 1]) * mascaraHorizontal[0][0]
+						+ getRed(xy[i - 1][j]) * mascaraHorizontal[0][1]
+						+ getRed(xy[i - 1][+j]) * mascaraHorizontal[0][2]
+						+ getRed(xy[i][j]) * mascaraHorizontal[1][0]
+						+ getRed(xy[i][j - 1]) * mascaraHorizontal[1][1]
+						+ getRed(xy[i][j + 1]) * mascaraHorizontal[1][2]
+						+ getRed(xy[i + 1][j - 1]) * mascaraHorizontal[2][0]
+						+ getRed(xy[i + 1][j]) * mascaraHorizontal[2][1]
+						+ getRed(xy[i + 1][j + 1]) * mascaraHorizontal[2][2];
 
-				resultado = (int) Math.sqrt(Math.pow(vertical, 2) + Math.pow(horizontal, 2));
+				resultado = (int) Math.sqrt(Math.pow(vertical, 2)
+						+ Math.pow(horizontal, 2));
 
 				if (resultado > 255) {
 					resultado = 255;
@@ -232,6 +356,106 @@ public class TelaUtils {
 			}
 		}
 		return img;
+	}
+
+	private BufferedImage processaCelulaRoxa(BufferedImage imagem) {
+		int[] rgb = getRgb(imagem, imagem.getWidth(), imagem.getHeight());
+		int[] greens = getGreens(rgb);
+		int aux = 0;
+		BufferedImage grid = new BufferedImage(imagem.getWidth(),
+				imagem.getHeight(), imagem.getType());
+		for (int i = 0; i < imagem.getWidth(); i++) {
+			for (int j = 0; j < imagem.getHeight(); j++) {
+				grid.setRGB(i, j, setRGB(greens[aux], 0, 0));
+				aux++;
+			}
+		}
+
+		PixelUtils utils = new PixelUtils();
+		BufferedImage greyScale = utils.greyScale(grid);
+		greyScale = negar(greyScale);
+		greyScale = utils.limiar(greyScale, 215);
+		greyScale = utils.abertura(greyScale);
+		greyScale = utils.fechamento(greyScale);
+		greyScale = erosao(greyScale);
+		greyScale = erosao(greyScale);
+		greyScale = erosao(greyScale);
+		// greyScale = sobel(greyScale);
+		// greyScale = negar(greyScale);
+		// greyScale = utils.limiar(greyScale, 250);
+
+		return greyScale;
+	}
+
+	private BufferedImage negar(BufferedImage grid) {
+		BufferedImage negada = new BufferedImage(grid.getWidth(),
+				grid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		for (int i = 0; i < grid.getWidth(); i++) {
+			for (int j = 0; j < grid.getHeight(); j++) {
+				int cor = grid.getRGB(i, j);
+				int b = 255 - (int) ((cor & 0x00FF0000) >>> 16);
+				int g = 255 - (int) ((cor & 0x0000FF00) >>> 8);
+				int r = 255 - (int) (cor & 0x000000FF);
+				Color color = new Color(r, g, b);
+				negada.setRGB(i, j, color.getRGB());
+			}
+		}
+		return negada;
+	}
+
+	private static int[][] processaErosao(int[][] matriz, int w, int h) {
+		int[][] novaMatriz = new int[w][h];
+		for (int i =  1; i < w - 1; i++) {
+			for (int j = 1; j < h - 1; j++) {
+				int min = Math.min(matriz[i - 1][j], matriz[i][j - 1]);
+				min = Math.min(min, matriz[i][j]);
+				min = Math.min(min, matriz[i][j + 1]);
+				min = Math.min(min, matriz[i + 1][j]);
+				novaMatriz[i][j] = min;
+			}
+		}
+		return novaMatriz;
+	}
+
+	public BufferedImage erosao(BufferedImage grid) {
+		int h = grid.getHeight();
+		int w = grid.getWidth();
+		getMatrizRGB(grid);
+		reds = processaErosao(reds, w, h);
+		greens = processaErosao(greens, w, h);
+		blues = processaErosao(blues, w, h);
+
+		return setMatrizRGB(h, w, grid);
+	}
+
+	private void getMatrizRGB(BufferedImage grid) {
+		int width = grid.getWidth();
+		int height = grid.getHeight();
+
+		reds = new int[width][height];
+		greens = new int[width][height];
+		blues = new int[width][height];
+
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				int rgb = grid.getRGB(i, j);
+				reds[i][j] = (int) ((rgb & 0x00FF0000) >>> 16);
+				greens[i][j] = (int) ((rgb & 0x0000FF00) >>> 8);
+				blues[i][j] = (int) (rgb & 0x000000FF);
+			}
+		}
+	}
+
+	private BufferedImage setMatrizRGB(int h, int w, BufferedImage grid) {
+
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				Color color = new Color(reds[i][j], greens[i][j], blues[i][j]);
+				grid.setRGB(i, j, color.getRGB());
+			}
+		}
+
+		return grid;
 	}
 
 }
