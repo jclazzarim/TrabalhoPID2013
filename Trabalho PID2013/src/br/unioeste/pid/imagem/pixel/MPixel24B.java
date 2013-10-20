@@ -59,16 +59,9 @@ public class MPixel24B implements MPixel {
 	public void grayScale() {
 		for (int i = 0; i < (height); i++) {
 			for (int j = 0; j < (width); j++) {
-				MPixel[i][j] = new Color(
-						(int) ((MPixel[i][j].getRed() * 0.299)
-								+ (MPixel[i][j].getGreen() * 0.587) + (MPixel[i][j]
-								.getBlue() * 0.114)),
-						(int) ((MPixel[i][j].getRed() * 0.299)
-								+ (MPixel[i][j].getGreen() * 0.587) + (MPixel[i][j]
-								.getBlue() * 0.114)),
-						(int) ((MPixel[i][j].getRed() * 0.299)
-								+ (MPixel[i][j].getGreen() * 0.587) + (MPixel[i][j]
-								.getBlue() * 0.114)));
+				MPixel[i][j] = new Color((int) ((MPixel[i][j].getRed() * 0.299) + (MPixel[i][j].getGreen() * 0.587) + (MPixel[i][j].getBlue() * 0.114)),
+						(int) ((MPixel[i][j].getRed() * 0.299) + (MPixel[i][j].getGreen() * 0.587) + (MPixel[i][j].getBlue() * 0.114)),
+						(int) ((MPixel[i][j].getRed() * 0.299) + (MPixel[i][j].getGreen() * 0.587) + (MPixel[i][j].getBlue() * 0.114)));
 			}
 		}
 		grayScale = true;
@@ -106,8 +99,7 @@ public class MPixel24B implements MPixel {
 					for (int l = 0; l < value; l++) {
 						walkX = i - (k - walk);
 						walkY = j - (l - walk);
-						if (walkX < 0 || walkX >= height || walkY < 0
-								|| walkY >= width) {
+						if (walkX < 0 || walkX >= height || walkY < 0 || walkY >= width) {
 							continue;
 						}
 						color += (cor[walkX][walkY]);
@@ -140,8 +132,7 @@ public class MPixel24B implements MPixel {
 		for (int i = 0; i < (height - 1); i++) {
 			for (int j = 0; j < (width - 1); j++) {
 
-				color = Math.sqrt(Math.pow(cor[i][j] - cor[i + 1][j + 1], 2)
-						+ Math.pow(cor[i + 1][j] - cor[i][j + 1], 2));
+				color = Math.sqrt(Math.pow(cor[i][j] - cor[i + 1][j + 1], 2) + Math.pow(cor[i + 1][j] - cor[i][j + 1], 2));
 
 				if (color > 255) {
 					color = 255;
@@ -153,72 +144,64 @@ public class MPixel24B implements MPixel {
 
 		// ultima linha
 		for (int i = 0; i < width - 1; i++) {
-			color = Math.sqrt(Math.pow(cor[height - 1][i]
-					- cor[height - 1][i + 1], 2) * 2);
-			MPixel[height - 1][i] = new Color((int) color, (int) color,
-					(int) color);
+			color = Math.sqrt(Math.pow(cor[height - 1][i] - cor[height - 1][i + 1], 2) * 2);
+			MPixel[height - 1][i] = new Color((int) color, (int) color, (int) color);
 
 		}
 
 		// ultima coluna
 		for (int i = 0; i < height - 1; i++) {
-			color = Math.sqrt(Math.pow(cor[i][width - 1]
-					- cor[i + 1][width - 1], 2) * 2);
-			MPixel[i][width - 1] = new Color((int) color, (int) color,
-					(int) color);
+			color = Math.sqrt(Math.pow(cor[i][width - 1] - cor[i + 1][width - 1], 2) * 2);
+			MPixel[i][width - 1] = new Color((int) color, (int) color, (int) color);
 		}
 	}
 
 	@Override
 	public void salvarImagem(File img) {
 		try (FileOutputStream fos = new FileOutputStream(img)) {
-            fos.write(cabecalho);
-            int erro = (width) % 4;
-            byte[] bErro = new byte[1];
+			fos.write(cabecalho);
+			int erro = (width) % 4;
+			byte[] bErro = new byte[1];
 
-            for (int i = height - 1; i >= 0; i--) {
-                for (int j = 0; j < width; j++) {
-                    fos.write(MPixel[i][j].getBlue());
-                    fos.write(MPixel[i][j].getGreen());
-                    fos.write(MPixel[i][j].getRed());
+			for (int i = height - 1; i >= 0; i--) {
+				for (int j = 0; j < width; j++) {
+					fos.write(MPixel[i][j].getBlue());
+					fos.write(MPixel[i][j].getGreen());
+					fos.write(MPixel[i][j].getRed());
 
-                }
-                for (int k = 0; k < erro; k++) {
-                    fos.write(bErro);
-                }
-            }
-            fos.flush();
-            fos.close();
-        } catch (IOException ex) {
-            Logger.getLogger(MPixel8B.class.getName()).log(Level.SEVERE, null, ex);
-        }
+				}
+				for (int k = 0; k < erro; k++) {
+					fos.write(bErro);
+				}
+			}
+			fos.flush();
+			fos.close();
+		} catch (IOException ex) {
+			Logger.getLogger(MPixel8B.class.getName()).log(Level.SEVERE, null, ex);
+		}
 
 	}
-
 
 	@Override
 	public IntervalXYDataset getHistograma() {
-//		 HistogramDataset histogramdataset = new HistogramDataset();
-//	        double red[] = new double[256];
-//	        double blue[] = new double[256];
-//	        double green[] = new double[256];
-//
-//	        for (int i = 0; i < histograma.size(); i++) {
-//	            red[i] = histograma.get(i).getR();
-//	            green[i] = histograma.get(i).getG();
-//	            blue[i] = histograma.get(i).getB();
-//	        }
-//
-//	        histogramdataset.addSeries("Vermelho", red, 100, 0, 256);
-//	        histogramdataset.addSeries("Azul", green, 100, 0, 256);
-//	        histogramdataset.addSeries("Verde", blue, 100, 0, 256);
-//	        
-//
-//	        return histogramdataset;
+		// HistogramDataset histogramdataset = new HistogramDataset();
+		// double red[] = new double[256];
+		// double blue[] = new double[256];
+		// double green[] = new double[256];
+		//
+		// for (int i = 0; i < histograma.size(); i++) {
+		// red[i] = histograma.get(i).getR();
+		// green[i] = histograma.get(i).getG();
+		// blue[i] = histograma.get(i).getB();
+		// }
+		//
+		// histogramdataset.addSeries("Vermelho", red, 100, 0, 256);
+		// histogramdataset.addSeries("Azul", green, 100, 0, 256);
+		// histogramdataset.addSeries("Verde", blue, 100, 0, 256);
+		//
+		//
+		// return histogramdataset;
 		return null;
 	}
-
-
-
 
 }

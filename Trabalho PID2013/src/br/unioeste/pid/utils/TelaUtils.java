@@ -10,59 +10,47 @@ import br.unioeste.pid.imagem.ImagePanel;
 
 public class TelaUtils {
 
-	public void colorPick(final ImagePanel imagePanel) {
-		imagePanel.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Point point = e.getPoint();
-				BufferedImage grid = imagePanel.getGrid();
-				int rgb = grid.getRGB(point.x, point.y);
-				int r = (int) ((rgb & 0x00FF0000) >>> 16);
-				int g = (int) ((rgb & 0x0000FF00) >>> 8);
-				int b = (int) (rgb & 0x000000FF);
-				processaCor(new Color(r, g, b));
-			}
-		});
+	private void verificaImagem(BufferedImage imagem) {
+		 
 	}
 
-	private void processaCor(final Color cor) {
-
-	}
-
-	private int[] getRgb(BufferedImage imagem, int w, int h){
-		int rgb[] = new int[w*h];
+	private int[] getRgb(BufferedImage imagem, int w, int h) {
+		int rgb[] = new int[w * h];
+		int aux = 0;
 
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				rgb[i+j] = imagem.getRGB(i, j);
+				rgb[aux] = imagem.getRGB(i, j);
+				aux++;
 			}
 		}
 		return rgb;
 	}
-	
+
 	public BufferedImage destacaCell(final BufferedImage imagem) {
-		
-		
+
 		int w = imagem.getWidth();
 		int h = imagem.getHeight();
 		int[] rgb = getRgb(imagem, w, h);
-		
-//		for (int i = 0; i < w * h; i++) {
-//			rgb[i] = setRGB(getRed(rgb[i]), 0, 0);
-//		}
+		int aux = 0;
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				imagem.setRGB(i, j, setRGB(getBlue(rgb[aux]), 0, 0));
+				aux++;
+			}
+		}
 
 		PixelUtils utils = new PixelUtils();
-		
+
 		BufferedImage grid = utils.greyScale(imagem);
 		grid = otsu(grid);
 		grid = utils.erosao(grid);
-		grid = utils.passaAlta(grid);
-		
-		BufferedImage negada = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		grid = sobel(grid);
+
+		BufferedImage negada = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
-				int cor = grid.getRGB(i, j); // a cor inversa é dado por 255
-												// menos o valor da cor
+				int cor = grid.getRGB(i, j); 
 				int b = 255 - (int) ((cor & 0x00FF0000) >>> 16);
 				int g = 255 - (int) ((cor & 0x0000FF00) >>> 8);
 				int r = 255 - (int) (cor & 0x000000FF);
@@ -71,16 +59,6 @@ public class TelaUtils {
 			}
 		}
 
-//		BufferedImage retorno = new BufferedImage(w, h, imagem.getType());	
-//		for (int i = 0; i < w; i++) {
-//			for (int j = 0; j < h; j++) {
-//				int rgb = grid1.getRGB(j, i) & grid2.getRGB(j, i);
-//				retorno.setRGB(j, i, rgb);
-//				
-//			}
-//		}
-		
-		
 		return negada;
 	}
 
@@ -124,9 +102,9 @@ public class TelaUtils {
 			}
 
 		}
-		
+
 		PixelUtils utils = new PixelUtils();
-		
+
 		return utils.limiar(imagem, threshold);
 	}
 
@@ -137,16 +115,123 @@ public class TelaUtils {
 		int rgb[] = getRgb(imagem, w, h);
 
 		for (int i = 0; i < w * h; i++) {
-			histograma[getBlue(rgb[i])]++;
+			histograma[getRed(rgb[i])]++;
 		}
 
 		return histograma;
 	}
-	
-	private int getBlue(int rgb){
-		int r = 255 - (int) ((rgb & 0x00FF0000) >>> 16);
-		int g = 255 - (int) ((rgb & 0x0000FF00) >>> 8);
+
+	private int getBlue(int rgb) {
 		return (int) (rgb & 0x000000FF);
+	}
+
+	private int getRed(int rgb) {
+		return (int) ((rgb & 0x00FF0000) >>> 16);
+	}
+
+	private int setRGB(int r, int g, int b) {
+		return ((255 & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0);
+	}
+
+	public BufferedImage sobel(BufferedImage image) {
+
+		int mascaraHorizontal[][] = new int[3][3];
+		int mascaraVertical[][] = new int[3][3];
+
+		mascaraVertical[0][0] = 1;
+		mascaraVertical[0][1] = 0;
+		mascaraVertical[0][2] = -1;
+		mascaraVertical[1][0] = 2;
+		mascaraVertical[1][1] = 0;
+		mascaraVertical[1][2] = -2;
+		mascaraVertical[2][0] = 1;
+		mascaraVertical[2][1] = 0;
+		mascaraVertical[2][2] = -1;
+
+		mascaraHorizontal[0][0] = -1;
+		mascaraHorizontal[0][1] = -2;
+		mascaraHorizontal[0][2] = -1;
+		mascaraHorizontal[1][0] = 0;
+		mascaraHorizontal[1][1] = 0;
+		mascaraHorizontal[1][2] = 0;
+		mascaraHorizontal[2][0] = 1;
+		mascaraHorizontal[2][1] = 2;
+		mascaraHorizontal[2][2] = 1;
+
+		return processaPassaAlta(image, mascaraHorizontal, mascaraVertical);
+	}
+
+	public BufferedImage processaPassaAlta(BufferedImage image, int mascaraHorizontal[][], int mascaraVertical[][]) {
+		int aux;
+		int w = image.getWidth();
+		int h = image.getHeight();
+		int rgb[] = getRgb(image, w, h);
+		int xy[][] = new int[w + 2][h + 2];
+		int vertical, horizontal;
+		int resultado;
+
+		BufferedImage img = new BufferedImage(w, h, image.getType());
+
+		// copiando imagem para centro matriz
+		aux = 0;
+		for (int j = 1; j <= w; j++) {
+			for (int i = 1; i <= h; i++) {
+				xy[j][i] = rgb[aux];
+				aux++;
+			}
+		}
+
+		// replicando nas bordas
+		xy[0][0] = xy[1][1];
+		xy[0][h] = xy[1][h - 1];
+		xy[w][h] = xy[w - 1][h - 1];
+		xy[w][0] = xy[w - 1][1];
+		for (int i = 1; i <= w; i++) {
+			xy[i][0] = xy[i][1];
+			xy[i][h] = xy[i][h - 1];
+		}
+
+		for (int i = 1; i <= h; i++) {
+			xy[0][i] = xy[1][i];
+			xy[w][i] = xy[w - 1][i];
+		}
+
+		aux = 0;
+		for (int i = 1; i <= w; i++) {
+			for (int j = 1; j <= h; j++) {
+
+				vertical = getRed(xy[i - 1][j - 1]) * mascaraVertical[0][0] + getRed(xy[i - 1][j]) * mascaraVertical[0][1] + getRed(xy[i - 1][+j])
+						* mascaraVertical[0][2] + getRed(xy[i][j]) * mascaraVertical[1][0] + getRed(xy[i][j - 1]) * mascaraVertical[1][1]
+						+ getRed(xy[i][j + 1]) * mascaraVertical[1][2] + getRed(xy[i + 1][j - 1]) * mascaraVertical[2][0] + getRed(xy[i + 1][j])
+						* mascaraVertical[2][1] + getRed(xy[i + 1][j + 1]) * mascaraVertical[2][2];
+
+				horizontal = getRed(xy[i - 1][j - 1]) * mascaraHorizontal[0][0] + getRed(xy[i - 1][j]) * mascaraHorizontal[0][1] + getRed(xy[i - 1][+j])
+						* mascaraHorizontal[0][2] + getRed(xy[i][j]) * mascaraHorizontal[1][0] + getRed(xy[i][j - 1]) * mascaraHorizontal[1][1]
+						+ getRed(xy[i][j + 1]) * mascaraHorizontal[1][2] + getRed(xy[i + 1][j - 1]) * mascaraHorizontal[2][0] + getRed(xy[i + 1][j])
+						* mascaraHorizontal[2][1] + getRed(xy[i + 1][j + 1]) * mascaraHorizontal[2][2];
+
+				resultado = (int) Math.sqrt(Math.pow(vertical, 2) + Math.pow(horizontal, 2));
+
+				if (resultado > 255) {
+					resultado = 255;
+				}
+
+				if (resultado < 0) {
+					resultado = 0;
+				}
+
+				rgb[aux] = setRGB(resultado, resultado, resultado);
+				aux++;
+			}
+		}
+		int count = 0;
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				img.setRGB(i, j, rgb[count]);
+				count++;
+			}
+		}
+		return img;
 	}
 
 }

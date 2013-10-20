@@ -259,7 +259,9 @@ public class TelaPrincipal extends TelaPrincipalView {
 			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 
 			BufferedImage grid = imagePanel.getGrid();
-			imagePanel.setGrid(pixelUtils.passaAlta(grid));
+			grid = pixelUtils.greyScale(grid);
+			grid = telaUtils.sobel(grid);
+			imagePanel.setGrid(grid);
 			imagePanel.update();
 		}
 
