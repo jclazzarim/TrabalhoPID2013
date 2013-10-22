@@ -70,10 +70,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			int selectedIndex = tabbedPane.getSelectedIndex();
-			JScrollPane scrollPanel = (JScrollPane) tabbedPane
-					.getComponentAt(selectedIndex);
-			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport()
-					.getView();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 			imagePanel.setGrid(pixelUtils.dilatacao(imagePanel.getGrid()));
 			imagePanel.update();
 			System.out.println("Finale");
@@ -87,10 +85,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			int selectedIndex = tabbedPane.getSelectedIndex();
-			JScrollPane scrollPanel = (JScrollPane) tabbedPane
-					.getComponentAt(selectedIndex);
-			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport()
-					.getView();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 			imagePanel.setGrid(pixelUtils.abertura(imagePanel.getGrid()));
 			imagePanel.update();
 			System.out.println("Finale");
@@ -104,10 +100,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			int selectedIndex = tabbedPane.getSelectedIndex();
-			JScrollPane scrollPanel = (JScrollPane) tabbedPane
-					.getComponentAt(selectedIndex);
-			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport()
-					.getView();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 			imagePanel.setGrid(pixelUtils.fechamento(imagePanel.getGrid()));
 			imagePanel.update();
 			System.out.println("Finale");
@@ -121,10 +115,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			int selectedIndex = tabbedPane.getSelectedIndex();
-			JScrollPane scrollPanel = (JScrollPane) tabbedPane
-					.getComponentAt(selectedIndex);
-			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport()
-					.getView();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 			imagePanel.setGrid(pixelUtils.erosao(imagePanel.getGrid()));
 			imagePanel.update();
 			System.out.println("Finale");
@@ -137,10 +129,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
 			int selectedIndex = tabbedPane.getSelectedIndex();
-			JScrollPane scrollPanel = (JScrollPane) tabbedPane
-					.getComponentAt(selectedIndex);
-			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport()
-					.getView();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 			new TelaLimiarizacao(imagePanel).setVisible(true);
 		}
 
@@ -152,8 +142,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			MPixel mPixel = Arquivo.getmPixel();
-			PainelHistograma histogramdemo1 = new PainelHistograma(
-					"Histograma", mPixel.getHistograma());
+			PainelHistograma histogramdemo1 = new PainelHistograma("Histograma", mPixel.getHistograma());
 			histogramdemo1.pack();
 			RefineryUtilities.centerFrameOnScreen(histogramdemo1);
 			histogramdemo1.setVisible(true);
@@ -179,13 +168,10 @@ public class TelaPrincipal extends TelaPrincipalView {
 				final ImagePanel imagePanel = new ImagePanel();
 				JScrollPane scroll = new JScrollPane();
 				scroll.setViewportView(imagePanel);
-				pixelUtils.addClosableTab(tabbedPane, scroll, file.getName(),
-						null);
+				pixelUtils.addClosableTab(tabbedPane, scroll, file.getName(), null);
 				imagePanel.setName(file.getName());
-				imagePanel.setPreferredSize(new Dimension(Arquivo.getWidth(),
-						Arquivo.getHeight()));
-				imagePanel.setSize(new Dimension(Arquivo.getWidth(), Arquivo
-						.getHeight()));
+				imagePanel.setPreferredSize(new Dimension(Arquivo.getWidth(), Arquivo.getHeight()));
+				imagePanel.setSize(new Dimension(Arquivo.getWidth(), Arquivo.getHeight()));
 				imagePanel.setImagem(Arquivo);
 				imagePanel.reset();
 				imagePanel.update();
@@ -194,9 +180,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						Point point = e.getPoint();
-						
-						imagePanel.setGrid(telaUtils.verificaImagem(imagem.getGrid(), (int) point.getX(),
-								(int) point.getY()));
+
+						imagePanel.setGrid(telaUtils.verificaImagem(imagem.getGrid(), (int) point.getX(), (int) point.getY()));
 						imagePanel.update();
 					}
 				});
@@ -204,11 +189,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 					mntmGreyscale.setEnabled(true);
 				}
 			} catch (FileNotFoundException ex) {
-				Logger.getLogger(TelaPrincipalView.class.getName()).log(
-						Level.SEVERE, null, ex);
-				JOptionPane.showMessageDialog(null,
-						"Erro Fatal: N�o foi poss�vel abrir o arquivo da imagem.\n"
-								+ ex);
+				Logger.getLogger(TelaPrincipalView.class.getName()).log(Level.SEVERE, null, ex);
+				JOptionPane.showMessageDialog(null, "Erro Fatal: N�o foi poss�vel abrir o arquivo da imagem.\n" + ex);
 			}
 
 		}
@@ -244,8 +226,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 							img.setExecutable(true);
 							break;
 						} catch (IOException ex) {
-							Logger.getLogger(TelaPrincipalView.class.getName())
-									.log(Level.SEVERE, null, ex);
+							Logger.getLogger(TelaPrincipalView.class.getName()).log(Level.SEVERE, null, ex);
 						}
 						System.out.println("N�o Salvou");
 						break;
@@ -255,10 +236,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 					}
 				}
 				int selectedIndex = tabbedPane.getSelectedIndex();
-				JScrollPane scroll = (JScrollPane) tabbedPane
-						.getComponentAt(selectedIndex);
-				ImagePanel imagePanel = (ImagePanel) scroll.getViewport()
-						.getView();
+				JScrollPane scroll = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+				ImagePanel imagePanel = (ImagePanel) scroll.getViewport().getView();
 				BufferedImage grid = imagePanel.getGrid();
 				try {
 					ImageIO.write(grid, "bmp", img);
@@ -277,8 +256,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JScrollPane scroll = (JScrollPane) tabbedPane
-					.getSelectedComponent();
+			JScrollPane scroll = (JScrollPane) tabbedPane.getSelectedComponent();
 			imagePanel = (ImagePanel) scroll.getViewport().getView();
 			BufferedImage src = pixelUtils.greyScale(imagePanel.getGrid());
 			imagePanel.setGrid(src);
@@ -291,10 +269,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			JScrollPane scrollPanel = (JScrollPane) tabbedPane
-					.getSelectedComponent();
-			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport()
-					.getView();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getSelectedComponent();
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 
 			BufferedImage grid = imagePanel.getGrid();
 			grid = pixelUtils.greyScale(grid);
@@ -318,13 +294,11 @@ public class TelaPrincipal extends TelaPrincipalView {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			JScrollPane scrollPanel = (JScrollPane) tabbedPane
-					.getSelectedComponent();
-			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport()
-					.getView();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getSelectedComponent();
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 
 			BufferedImage grid = imagePanel.getGrid();
-//			imagePanel.setGrid(telaUtils.destacaCell(grid));
+			// imagePanel.setGrid(telaUtils.destacaCell(grid));
 			imagePanel.update();
 		}
 
