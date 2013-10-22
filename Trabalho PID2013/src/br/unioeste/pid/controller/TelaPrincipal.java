@@ -57,7 +57,8 @@ public class TelaPrincipal extends TelaPrincipalView {
 		mntmEroso.addActionListener(new ActionErosao());
 		mntmAbertura.addActionListener(new ActionAbertura());
 		mntmFechamento.addActionListener(new ActionFechamento());
-		mntmProcessamento.addActionListener(new ActionProcessamento());
+		mntmProcessamento.addActionListener(new ActionMediana());
+//		mntmMediana.addActionListener(new ActionMediana());
 
 	}
 
@@ -65,6 +66,20 @@ public class TelaPrincipal extends TelaPrincipalView {
 		new TelaPrincipal().setVisible(true);
 	}
 
+	private class ActionMediana extends AbstractAction{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			int selectedIndex = tabbedPane.getSelectedIndex();
+			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
+			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
+			imagePanel.setGrid(telaUtils.mediana(imagePanel.getGrid(),1));
+			imagePanel.update();
+			System.out.println("Finale Mediana");
+		}
+		
+	}
+	
 	private class ActionDilatacao extends AbstractAction {
 
 		@Override
@@ -72,7 +87,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 			int selectedIndex = tabbedPane.getSelectedIndex();
 			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
 			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
-			imagePanel.setGrid(pixelUtils.dilatacao(imagePanel.getGrid()));
+			imagePanel.setGrid(telaUtils.dilatacaoBola(imagePanel.getGrid()));
 			imagePanel.update();
 			System.out.println("Finale");
 
