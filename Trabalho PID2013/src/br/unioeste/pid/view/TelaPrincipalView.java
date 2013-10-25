@@ -1,14 +1,14 @@
 package br.unioeste.pid.view;
 
-import javax.swing.JFrame;
-import java.awt.GridBagLayout;
-import javax.swing.JMenuBar;
-import javax.swing.JTabbedPane;
 import java.awt.GridBagConstraints;
-import javax.swing.JMenuItem;
+import java.awt.GridBagLayout;
+
+import javax.swing.JFrame;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
-import java.awt.Window.Type;
+import javax.swing.JTabbedPane;
 
 public class TelaPrincipalView extends JFrame {
 

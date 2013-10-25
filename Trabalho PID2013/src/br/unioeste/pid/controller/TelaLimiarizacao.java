@@ -1,12 +1,8 @@
 package br.unioeste.pid.controller;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.color.ColorSpace;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ColorConvertOp;
 
 import javax.swing.AbstractAction;
 import javax.swing.event.ChangeEvent;

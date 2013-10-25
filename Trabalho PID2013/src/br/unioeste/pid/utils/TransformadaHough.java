@@ -2,7 +2,6 @@ package br.unioeste.pid.utils;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.Vector;
 
 public class TransformadaHough extends Thread {

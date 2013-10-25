@@ -6,11 +6,11 @@ import java.awt.color.ColorSpace;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageFilter;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorConvertOp;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.imageio.ImageTypeSpecifier;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -23,18 +23,17 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
-import br.unioeste.pid.imagem.ImagePanel;
-
 import com.jgoodies.looks.common.RGBGrayFilter;
 import com.pearsoneduc.ip.op.FFTException;
 import com.pearsoneduc.ip.op.ImageFFT;
 
 public class PixelUtils {
-	private static final Icon CLOSE_TAB_ICON = new ImageIcon(
-			"libs\\closeTabButton.png", null);
+	private static final Icon CLOSE_TAB_ICON = new ImageIcon("libs\\closeTabButton.png", null);
 	private int[][] reds;
 	private int[][] greens;
 	private int[][] blues;
+	private Map<Pixel, Integer> celulas;
+	private int count;
 
 	public PixelUtils() {
 	}
@@ -48,8 +47,7 @@ public class PixelUtils {
 	}
 
 	public BufferedImage passaAlta(BufferedImage src) {
-		BufferedImageOp grayscaleConv = new ColorConvertOp(
-				ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+		BufferedImageOp grayscaleConv = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 		src = grayscaleConv.filter(src, null);
 
 		float f = (float) 0.5;
@@ -67,8 +65,7 @@ public class PixelUtils {
 
 	}
 
-	public void addClosableTab(final JTabbedPane tabbedPane,
-			final JComponent c, final String title, final Icon icon) {
+	public void addClosableTab(final JTabbedPane tabbedPane, final JComponent c, final String title, final Icon icon) {
 		// Add the tab to the pane without any label
 		tabbedPane.addTab(title, c);
 		int pos = tabbedPane.indexOfComponent(c);
@@ -91,8 +88,7 @@ public class PixelUtils {
 		// Configure icon and rollover icon for button
 		btnClose.setRolloverIcon(CLOSE_TAB_ICON);
 		btnClose.setRolloverEnabled(true);
-		btnClose.setIcon(RGBGrayFilter
-				.getDisabledIcon(btnClose, CLOSE_TAB_ICON));
+		btnClose.setIcon(RGBGrayFilter.getDisabledIcon(btnClose, CLOSE_TAB_ICON));
 
 		// Set border null so the button doesn't make the tab too big
 		btnClose.setBorder(null);
@@ -141,8 +137,7 @@ public class PixelUtils {
 
 		// Get the appropriate input map using the JComponent constants.
 		// This one works well when the component is a container.
-		InputMap inputMap = c
-				.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		InputMap inputMap = c.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
 		// Add the key binding for the keystroke to the action name
 		inputMap.put(controlW, "closeTab");
@@ -240,14 +235,12 @@ public class PixelUtils {
 	}
 
 	public BufferedImage greyScale(BufferedImage grid) {
-		BufferedImageOp grayscaleConv = new ColorConvertOp(
-				ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
+		BufferedImageOp grayscaleConv = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 		return grayscaleConv.filter(grid, null);
 	}
 
 	public BufferedImage limiar(BufferedImage image, int limiar) {
-		BufferedImage imageLimiar = new BufferedImage(image.getWidth(),
-				image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage imageLimiar = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		int width = image.getWidth();
 		int height = image.getHeight();
 
@@ -267,6 +260,75 @@ public class PixelUtils {
 			}
 		}
 		return imageLimiar;
+	}
+
+	public void getConectividades(BufferedImage imagem) {
+		count = 0;
+		celulas = new HashMap<Pixel, Integer>();
+		for (int i = 0; i < imagem.getWidth(); i++) {
+			for (int j = 0; j < imagem.getHeight(); j++) {
+				if (imagem.getRGB(i, j) == Color.BLACK.getRGB()) {
+					Pixel pixel = new Pixel(i, j);
+					conectividadeRecursiva(imagem, pixel);
+				}
+			}
+		}
+	}
+
+	private void conectividadeRecursiva(BufferedImage imagem, Pixel pixel) {
+
+		if (getCelulas().get(pixel) == null) {
+			count++;
+			getCelulas().put(pixel, count);
+
+			if (imagem.getRGB(pixel.getX() - 1, pixel.getY() - 1) == Color.BLACK.getRGB()) {// Superior esquerdo
+				pixel.setX(pixel.getX() - 1);
+				pixel.setY(pixel.getY() - 1);
+				conectividadeRecursiva(imagem, pixel);
+			}
+
+			if (imagem.getRGB(pixel.getX() - 1, pixel.getY()) == Color.BLACK.getRGB()) {// Superior
+				pixel.setX(pixel.getX() - 1);
+				conectividadeRecursiva(imagem, pixel);
+			}
+
+			if (imagem.getRGB(pixel.getX() - 1, pixel.getY() + 1) == Color.BLACK.getRGB()) {// Superior Direito
+				pixel.setX(pixel.getX() - 1);
+				pixel.setY(pixel.getY() + 1);
+				conectividadeRecursiva(imagem, pixel);
+			}
+
+			if (imagem.getRGB(pixel.getX(), pixel.getY() - 1) == Color.BLACK.getRGB()) {// esquerda
+				pixel.setY(pixel.getY() - 1);
+				conectividadeRecursiva(imagem, pixel);
+			}
+
+			if (imagem.getRGB(pixel.getX(), pixel.getY() + 1) == Color.BLACK.getRGB()) {// direita
+				pixel.setY(pixel.getY() + 1);
+				conectividadeRecursiva(imagem, pixel);
+			}
+
+			if (imagem.getRGB(pixel.getX() + 1, pixel.getY() - 1) == Color.BLACK.getRGB()) {// inferior esquerdo
+				pixel.setX(pixel.getX() + 1);
+				pixel.setY(pixel.getY() - 1);
+				conectividadeRecursiva(imagem, pixel);
+			}
+
+			if (imagem.getRGB(pixel.getX() + 1, pixel.getY()) == Color.BLACK.getRGB()) {// baixo
+				pixel.setX(pixel.getX() + 1);
+				conectividadeRecursiva(imagem, pixel);
+			}
+
+			if (imagem.getRGB(pixel.getX(), pixel.getY() - 1) == Color.BLACK.getRGB()) {// inferior direito
+				pixel.setX(pixel.getX() + 1);
+				pixel.setY(pixel.getY() + 1);
+				conectividadeRecursiva(imagem, pixel);
+			}
+		} 
+	}
+
+	public Map<Pixel, Integer> getCelulas() {
+		return celulas;
 	}
 
 }

@@ -2,12 +2,12 @@ package br.unioeste.pid.utils;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class TelaUtils {
 
@@ -26,12 +26,12 @@ public class TelaUtils {
 		int rr = 0;
 
 		for (int i = 0; i < w * h; i++) {
-			rr += getRed(rgb[i]);
+			rr += getGreen(rgb[i]);
 		}
 		rr = (int) (rr / (w * h));
 
 		TransformadaHough hough;
-		if (rr > 100) {
+		if (rr > 120) {
 			return processaCelulaRoxa(imagem);
 		} else {
 			return processaCelulaColorida(imagem, x, y);
@@ -52,8 +52,7 @@ public class TelaUtils {
 		int red = getRed(rgb);
 
 		if (blue > green && blue > red) {
-			return getBlues(getRgb(imagem, imagem.getWidth(),
-					imagem.getHeight()));
+			return getBlues(getRgb(imagem, imagem.getWidth(), imagem.getHeight()));
 		}
 
 		if (red > green && blue < red) {
@@ -61,8 +60,7 @@ public class TelaUtils {
 		}
 
 		if (blue < green && green > red) {
-			return getGreens(getRgb(imagem, imagem.getWidth(),
-					imagem.getHeight()));
+			return getGreens(getRgb(imagem, imagem.getWidth(), imagem.getHeight()));
 		}
 		return null;
 
@@ -121,14 +119,11 @@ public class TelaUtils {
 		return rgb;
 	}
 
-	public BufferedImage processaCelulaColorida(final BufferedImage imagem,
-			int x, int y) {
+	public BufferedImage processaCelulaColorida(final BufferedImage imagem, int x, int y) {
 
 		int w = imagem.getWidth();
 		int h = imagem.getHeight();
-		int[] rgb = getRgb(imagem, w, h);
 		int aux = 0;
-		// int[] corCelula = verificaImagem(imagem);
 		int[] corCelula = getColorImagem(x, y, imagem);
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
@@ -144,95 +139,18 @@ public class TelaUtils {
 		grid = utils.erosao(grid);
 		grid = sobel(grid);
 		grid = negar(grid);
-		List<Circulo> circulos = getCirculos(grid);
-		for (Circulo circulo : circulos) {
-			System.out.println("X: " + circulo.getX() + " Y: " + circulo.getY()
-					+ " Raio: " + circulo.getRaio());
+		utils.getConectividades(grid);
+		Set<Entry<Pixel, Integer>> entrySet = utils.getCelulas().entrySet();
+		
+		for (Entry<Pixel, Integer> entry : entrySet) {
+			System.out.println("X: " + entry.getKey().getX() + " Y: " + entry.getKey().getY() + " Int: "
+			        + entry.getValue());
 		}
+		
+		System.out.println(entrySet.size());
+		System.out.println(grid.getHeight()*grid.getWidth());
+		
 		return grid;
-	}
-
-	private List<Circulo> getCirculos(BufferedImage imagem) {
-		List<Circulo> circulos = new ArrayList<>();
-
-		for (int i = 0; i < imagem.getWidth(); i++) {
-			for (int j = 0; j < imagem.getHeight(); j++) {
-				Color cor = intToColor(imagem.getRGB(i, j));
-				if (cor.equals(Color.BLACK)) {// compara com o fundo branco
-					for (int raio = 5; raio < imagem.getWidth(); raio++) {
-						if (raio > i || raio > j
-								|| (raio + i) >= imagem.getWidth()
-								|| (raio + j) >= imagem.getHeight()) {
-							continue;
-						}
-						Color pBordaDireita = intToColor(imagem.getRGB(
-								i + raio, j));
-						Color pBordaEsquerda = intToColor(imagem.getRGB(i
-								- raio, j));
-						Color pBordaCima = intToColor(imagem
-								.getRGB(i, j - raio));
-						Color pBordaBaixo = intToColor(imagem.getRGB(i, j
-								+ raio));
-						if (pBordaDireita.equals(Color.BLACK))
-							if (pBordaEsquerda.equals(Color.BLACK))
-								if (pBordaCima.equals(Color.BLACK))
-									if (pBordaBaixo.equals(Color.BLACK)) {
-										circulos.add(new Circulo(i, j, raio));
-									}
-					}
-				}
-			}
-		}
-
-		return circulos;
-	}
-
-	private Circulo detectaQuadrado(BufferedImage imagem) {
-		Circulo pBE = null;
-		boolean fim = false;
-		for (int i = 0; i < imagem.getWidth(); i++) {
-			for (int j = 0; j < imagem.getHeight(); j++) {
-				Color cor = intToColor(imagem.getRGB(i, j));
-				if (cor.equals(Color.BLACK)) {
-					pBE = new Circulo(i, j, 0);
-					fim = true;
-					break;
-				}
-			}
-			if (fim) {
-				break;
-			}
-		}
-
-		Circulo pBD = null;
-		for (int i = pBE.getX(); i < imagem.getWidth(); i++) {
-			Color cor = intToColor(imagem.getRGB(i, pBE.getY()));
-			if (cor.equals(Color.BLACK)) {
-				pBD = new Circulo(i, pBE.getY(), i - pBE.getX());
-				break;
-			}
-		}
-
-		Circulo pBC = null;
-		int raio = pBD.getRaio() / 2;
-		for (int i = raio; i > 0; i--) {
-			Color cor = intToColor(imagem.getRGB(i, pBE.getY()));
-			if (cor.equals(Color.BLACK)) {
-				pBC = new Circulo(raio, i, 0);
-				break;
-			}
-		}
-
-		Circulo pBB = null;
-		for (int i = raio; i < imagem.getHeight(); i++) {
-			Color cor = intToColor(imagem.getRGB(i, pBE.getY()));
-			if (cor.equals(Color.BLACK)) {
-				pBB = new Circulo(raio, i, 0);
-				break;
-			}
-		}
-
-		return pBE;
 	}
 
 	private Color intToColor(int rgb) {
@@ -295,7 +213,7 @@ public class TelaUtils {
 		int rgb[] = getRgb(imagem, w, h);
 
 		for (int i = 0; i < w * h; i++) {
-			histograma[getRed(rgb[i])]++;
+			histograma[getGreen(rgb[i])]++;
 		}
 
 		return histograma;
@@ -330,7 +248,7 @@ public class TelaUtils {
 	}
 
 	private int getRed(int rgb) {
-		return (int) ((rgb & 0x00FF0000) >> 8);
+		return (int) ((rgb & 0x00FF0000) >>> 16);
 	}
 
 	private int getGreen(int rgb) {
@@ -338,8 +256,7 @@ public class TelaUtils {
 	}
 
 	private int setRGB(int r, int g, int b) {
-		return ((255 & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8)
-				| ((b & 0xFF) << 0);
+		return ((255 & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF) << 0);
 	}
 
 	public BufferedImage sobel(BufferedImage image) {
@@ -370,8 +287,7 @@ public class TelaUtils {
 		return processaPassaAlta(image, mascaraHorizontal, mascaraVertical);
 	}
 
-	private BufferedImage processaPassaAlta(BufferedImage image,
-			int mascaraHorizontal[][], int mascaraVertical[][]) {
+	private BufferedImage processaPassaAlta(BufferedImage image, int mascaraHorizontal[][], int mascaraVertical[][]) {
 		int aux;
 		int w = image.getWidth();
 		int h = image.getHeight();
@@ -410,28 +326,21 @@ public class TelaUtils {
 		for (int i = 1; i <= w; i++) {
 			for (int j = 1; j <= h; j++) {
 
-				vertical = getRed(xy[i - 1][j - 1]) * mascaraVertical[0][0]
-						+ getRed(xy[i - 1][j]) * mascaraVertical[0][1]
-						+ getRed(xy[i - 1][+j]) * mascaraVertical[0][2]
-						+ getRed(xy[i][j]) * mascaraVertical[1][0]
-						+ getRed(xy[i][j - 1]) * mascaraVertical[1][1]
-						+ getRed(xy[i][j + 1]) * mascaraVertical[1][2]
-						+ getRed(xy[i + 1][j - 1]) * mascaraVertical[2][0]
-						+ getRed(xy[i + 1][j]) * mascaraVertical[2][1]
-						+ getRed(xy[i + 1][j + 1]) * mascaraVertical[2][2];
+				vertical = getRed(xy[i - 1][j - 1]) * mascaraVertical[0][0] + getRed(xy[i - 1][j])
+				        * mascaraVertical[0][1] + getRed(xy[i - 1][+j]) * mascaraVertical[0][2] + getRed(xy[i][j])
+				        * mascaraVertical[1][0] + getRed(xy[i][j - 1]) * mascaraVertical[1][1] + getRed(xy[i][j + 1])
+				        * mascaraVertical[1][2] + getRed(xy[i + 1][j - 1]) * mascaraVertical[2][0]
+				        + getRed(xy[i + 1][j]) * mascaraVertical[2][1] + getRed(xy[i + 1][j + 1])
+				        * mascaraVertical[2][2];
 
-				horizontal = getRed(xy[i - 1][j - 1]) * mascaraHorizontal[0][0]
-						+ getRed(xy[i - 1][j]) * mascaraHorizontal[0][1]
-						+ getRed(xy[i - 1][+j]) * mascaraHorizontal[0][2]
-						+ getRed(xy[i][j]) * mascaraHorizontal[1][0]
-						+ getRed(xy[i][j - 1]) * mascaraHorizontal[1][1]
-						+ getRed(xy[i][j + 1]) * mascaraHorizontal[1][2]
-						+ getRed(xy[i + 1][j - 1]) * mascaraHorizontal[2][0]
-						+ getRed(xy[i + 1][j]) * mascaraHorizontal[2][1]
-						+ getRed(xy[i + 1][j + 1]) * mascaraHorizontal[2][2];
+				horizontal = getRed(xy[i - 1][j - 1]) * mascaraHorizontal[0][0] + getRed(xy[i - 1][j])
+				        * mascaraHorizontal[0][1] + getRed(xy[i - 1][+j]) * mascaraHorizontal[0][2] + getRed(xy[i][j])
+				        * mascaraHorizontal[1][0] + getRed(xy[i][j - 1]) * mascaraHorizontal[1][1]
+				        + getRed(xy[i][j + 1]) * mascaraHorizontal[1][2] + getRed(xy[i + 1][j - 1])
+				        * mascaraHorizontal[2][0] + getRed(xy[i + 1][j]) * mascaraHorizontal[2][1]
+				        + getRed(xy[i + 1][j + 1]) * mascaraHorizontal[2][2];
 
-				resultado = (int) Math.sqrt(Math.pow(vertical, 2)
-						+ Math.pow(horizontal, 2));
+				resultado = (int) Math.sqrt(Math.pow(vertical, 2) + Math.pow(horizontal, 2));
 
 				if (resultado > 255) {
 					resultado = 255;
@@ -459,8 +368,7 @@ public class TelaUtils {
 		int[] rgb = getRgb(imagem, imagem.getWidth(), imagem.getHeight());
 		int[] greens = getGreens(rgb);
 		int aux = 0;
-		BufferedImage grid = new BufferedImage(imagem.getWidth(),
-				imagem.getHeight(), imagem.getType());
+		BufferedImage grid = new BufferedImage(imagem.getWidth(), imagem.getHeight(), imagem.getType());
 		for (int i = 0; i < imagem.getWidth(); i++) {
 			for (int j = 0; j < imagem.getHeight(); j++) {
 				grid.setRGB(i, j, setRGB(0, greens[aux], 0));
@@ -484,8 +392,7 @@ public class TelaUtils {
 	}
 
 	private BufferedImage negar(BufferedImage grid) {
-		BufferedImage negada = new BufferedImage(grid.getWidth(),
-				grid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage negada = new BufferedImage(grid.getWidth(), grid.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		for (int i = 0; i < grid.getWidth(); i++) {
 			for (int j = 0; j < grid.getHeight(); j++) {
 				int cor = grid.getRGB(i, j);
@@ -820,7 +727,7 @@ public class TelaUtils {
 		Integer h = imagem.getHeight();
 		Integer w = imagem.getWidth();
 		int[][][] matrizImagem = new int[w][h][3];
-		
+
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
 				int rgb = imagem.getRGB(i, j);
@@ -829,44 +736,40 @@ public class TelaUtils {
 				matrizImagem[i][j][2] = (rgb) & 255;
 			}
 		}
-		
-		imagem = medianaVizinhanca(vizinhanca, imagemOriginal,
-				matrizImagem);
+
+		imagem = medianaVizinhanca(vizinhanca, imagemOriginal, matrizImagem);
 
 		return imagem;
 	}
 
-	public static BufferedImage medianaVizinhanca(int vizinhanca,
-			BufferedImage imagemOriginal, int[][][] matrizImagem) {
+	public static BufferedImage medianaVizinhanca(int vizinhanca, BufferedImage imagemOriginal, int[][][] matrizImagem) {
 		Integer h = imagemOriginal.getHeight();
 		Integer w = imagemOriginal.getWidth();
-		int[][][] matrizNovaImagem = new int[h][w][3];
+		int[][][] matrizNovaImagem = new int[w][h][3];
 		int[] somaR = new int[h * w];
 		int[] somaG = new int[h * w];
 		int[] somaB = new int[h * w];
-		
+
 		int contador = 0;
-		
+
 		if (vizinhanca % 2 != 0) {
 			vizinhanca--;
 		}
-		
+
 		int pivo = (h * w) / 2;
 		int limiteLateral = vizinhanca / 2;
 		int limSuplinha, limInflinha, limSupColuna, limInfColuna;
-		
-		for (int j = 0; j < w; j++) {
-			for (int i = 0; i < h; i++) {
-				limInflinha = j - limiteLateral;
-				limSuplinha = j + limiteLateral;
-				limInfColuna = i - limiteLateral;
-				limSupColuna = i + limiteLateral;
-			
-				for (; limInflinha <= limSuplinha; limInflinha++, limInfColuna = i
-						- limiteLateral) {
+
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				limInflinha = i - limiteLateral;
+				limSuplinha = i + limiteLateral;
+				limInfColuna = j - limiteLateral;
+				limSupColuna = j + limiteLateral;
+
+				for (; limInflinha <= limSuplinha; limInflinha++, limInfColuna = j - limiteLateral) {
 					for (; limInfColuna <= limSupColuna; limInfColuna++) {
-						if ((limInflinha >= 0) && (limInfColuna >= 0)
-								&& (limInflinha < j) && (limInfColuna < i)) {
+						if ((limInflinha >= 0) && (limInfColuna >= 0) && (limInflinha < i) && (limInfColuna < j)) {
 							somaR[contador] = matrizImagem[limInflinha][limInfColuna][0];
 							somaG[contador] = matrizImagem[limInflinha][limInfColuna][1];
 							somaB[contador] = matrizImagem[limInflinha][limInfColuna][2];
@@ -875,6 +778,7 @@ public class TelaUtils {
 
 					}
 				}
+
 				Arrays.sort(somaR);
 				Arrays.sort(somaG);
 				Arrays.sort(somaB);
@@ -883,20 +787,20 @@ public class TelaUtils {
 				int medianaG = (somaG[pivo] + somaG[pivo - 1]) / 2;
 				int medianaB = (somaB[pivo] + somaB[pivo - 1]) / 2;
 
-				matrizNovaImagem[j][i][0] = medianaR;
-				matrizNovaImagem[j][i][1] = medianaG;
-				matrizNovaImagem[j][i][2] = medianaB;
+				matrizNovaImagem[i][j][0] = medianaR;
+				matrizNovaImagem[i][j][1] = medianaG;
+				matrizNovaImagem[i][j][2] = medianaB;
 
 				contador = 0;
 			}
 		}
-		
+
 		BufferedImage novaImagem = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
-		for (int j = 0; j < w; j++) {
-			for (int i = 0; i < h; i++) {
-				int r = ((matrizNovaImagem[j][i][0])) & 255;
-				int g = ((matrizNovaImagem[j][i][1])) & 255;
-				int b = (matrizNovaImagem[j][i][2]) & 255;
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				int r = ((matrizNovaImagem[i][j][0])) & 255;
+				int g = ((matrizNovaImagem[i][j][1])) & 255;
+				int b = (matrizNovaImagem[i][j][2]) & 255;
 				int rgb = (r << 16) | (g << 8) | (b);
 				novaImagem.setRGB(i, j, rgb);
 			}

@@ -10,8 +10,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import br.unioeste.pid.utils.PixelUtils;
 import br.unioeste.pid.imagem.ImagePanel;
+import br.unioeste.pid.utils.PixelUtils;
 import br.unioeste.pid.view.TelaOperacoesView;
 
 public class TelaOperacoes extends TelaOperacoesView {

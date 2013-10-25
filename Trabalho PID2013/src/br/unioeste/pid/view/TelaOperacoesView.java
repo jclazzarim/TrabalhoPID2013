@@ -1,15 +1,15 @@
 package br.unioeste.pid.view;
 
-import javax.swing.JDialog;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JButton;
+
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class TelaOperacoesView extends JDialog {
 	protected JLabel lblImagem;

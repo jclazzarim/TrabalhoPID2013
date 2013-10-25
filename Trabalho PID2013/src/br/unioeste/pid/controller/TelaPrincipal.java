@@ -2,14 +2,10 @@ package br.unioeste.pid.controller;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.color.ColorSpace;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ColorConvertOp;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,9 +28,6 @@ import br.unioeste.pid.imagem.pixel.MPixel;
 import br.unioeste.pid.utils.PixelUtils;
 import br.unioeste.pid.utils.TelaUtils;
 import br.unioeste.pid.view.TelaPrincipalView;
-
-import com.pearsoneduc.ip.op.FFTException;
-import com.pearsoneduc.ip.op.ImageFFT;
 
 public class TelaPrincipal extends TelaPrincipalView {
 	private static final long serialVersionUID = 1L;

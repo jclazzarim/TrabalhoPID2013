@@ -1,23 +1,13 @@
 package br.unioeste.pid.utils;
 
-public class Circulo {
+public class Pixel {
 
-	private int x; // coordenada do centro do circulo
+	private int x; 
 	private int y;
-	private int raio;
 
-	public Circulo(int x, int y, int raio) {
+	public Pixel(int x, int y) {
 		this.x = x;
 		this.y = y;
-		this.raio = raio;
-	}
-
-	public int getRaio() {
-		return raio;
-	}
-
-	public void setRaio(int raio) {
-		this.raio = raio;
 	}
 
 	public int getY() {

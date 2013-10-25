@@ -1,13 +1,14 @@
 package br.unioeste.pid.view;
 
-import javax.swing.JDialog;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
-import javax.swing.JSlider;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.JPanel;
+
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 public class TelaLimiarizacaoView extends JDialog {

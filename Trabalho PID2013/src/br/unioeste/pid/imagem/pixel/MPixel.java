@@ -1,6 +1,5 @@
 package br.unioeste.pid.imagem.pixel;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.FileInputStream;
