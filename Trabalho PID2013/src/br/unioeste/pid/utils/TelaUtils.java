@@ -181,7 +181,7 @@ public class TelaUtils {
 		grid = processaDiametro(grid, borda);
 		return grid;
 	}
-	
+
 	private BufferedImage processaCelulaRoxa(BufferedImage imagem) {
 		int[] rgb = getRgb(imagem, imagem.getWidth(), imagem.getHeight());
 		int[] greens = getGreens(rgb);
@@ -206,7 +206,7 @@ public class TelaUtils {
 		greyScale = erosaoBola(greyScale);
 		greyScale = mediana(greyScale, 17);
 		greyScale = dilatacaoBola(greyScale);
-		
+
 		ArrayList<Pixel> borda = getBorda(greyScale);
 		greyScale = roberts(greyScale);
 		greyScale = negar(greyScale);
@@ -237,7 +237,7 @@ public class TelaUtils {
 		resultados[3] = perimetro;
 		return resultados;
 	}
-	
+
 	private BufferedImage processaDiametro(BufferedImage grid, ArrayList<Pixel> borda) {
 		PixelUtils utils = new PixelUtils();
 
@@ -251,7 +251,8 @@ public class TelaUtils {
 		graphics.setColor(Color.RED);
 		Pixel pixel1;
 		Pixel pixel2;
-
+		int mediaP = 0;
+		int mediaD = 0;
 		for (List<Entry<Pixel, Integer>> entry : subImagens) {
 			if (entry.get(0).getValue() != 0) {
 				if (entry.get(0).getValue() > max) {
@@ -260,18 +261,21 @@ public class TelaUtils {
 				Object[] diametro = getDiametro(entry);
 				System.out.println("Perimetro da celula " + entry.get(0).getValue() + ": " + (int) diametro[3]);
 				System.out.println("Diametro " + entry.get(0).getValue() + ": " + (int) diametro[0]);
+				mediaD += (int) diametro[0];
+				mediaP += (int) diametro[3];
 				pixel1 = (Pixel) diametro[1];
 				pixel2 = (Pixel) diametro[2];
 				if (pixel1 != null && pixel2 != null)
-					graphics.drawString("D: "+(int) diametro[0]+" P: "+(int) diametro[3], pixel1.getX(), pixel1.getY());
-					graphics.drawLine(pixel1.getX(), pixel1.getY(), pixel2.getX(), pixel2.getY());
+					graphics.drawString("D: " + (int) diametro[0] + " P: " + (int) diametro[3], pixel1.getX(), pixel1.getY());
+				graphics.drawLine(pixel1.getX(), pixel1.getY(), pixel2.getX(), pixel2.getY());
 			}
 		}
-
+		graphics.drawString("Celulas: " + max, 0, 10);
+		graphics.drawString(" Media Diametro: " + mediaD / max, 0, 20);
+		graphics.drawString("Media Perimetro: " + mediaP / max, 0, 30);
 		System.out.println("Quantidad de celulas: " + max);
 		return grid;
 	}
-
 
 	private List<List<Entry<Pixel, Integer>>> getSubImagens(Set<Entry<Pixel, Integer>> entrys) {
 		List<Entry<Pixel, Integer>> listaPixels = new ArrayList<>(entrys);
