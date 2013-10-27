@@ -23,7 +23,8 @@ public class TelaPrincipalView extends JFrame {
 	protected JTabbedPane tabbedPane;
 	protected JScrollPane scrollPane;
 	protected JMenu mnFiltro;
-	protected JMenuItem mntmPassaalta;
+	protected JMenuItem mntmRoberts;
+	protected JMenuItem mntmSobel;
 	protected JMenuItem mntmOperaes;
 	protected JMenuItem mntmLimiarizao;
 	protected JMenuItem mntmDilatao;
@@ -67,8 +68,11 @@ public class TelaPrincipalView extends JFrame {
 		this.mnFiltro = new JMenu("Filtro");
 		this.mnImagem.add(this.mnFiltro);
 
-		this.mntmPassaalta = new JMenuItem("Passa-Alta");
-		this.mnFiltro.add(this.mntmPassaalta);
+		this.mntmRoberts = new JMenuItem("Roberts");
+		this.mnFiltro.add(this.mntmRoberts);
+		
+		this.mntmSobel = new JMenuItem("Sobel");
+		this.mnFiltro.add(this.mntmSobel);
 
 		this.mntmDilatao = new JMenuItem("Dilata\u00E7\u00E3o");
 		this.mnFiltro.add(this.mntmDilatao);

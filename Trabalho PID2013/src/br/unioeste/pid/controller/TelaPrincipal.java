@@ -43,15 +43,15 @@ public class TelaPrincipal extends TelaPrincipalView {
 		mntmAbrir.addActionListener(new ActionAbrir());
 		mntmSalvar.addActionListener(new ActionSalvar());
 		mntmGreyscale.addActionListener(new ActionGreyScale());
-		mntmPassaalta.addActionListener(new ActionPassaAlta());
+		mntmRoberts.addActionListener(new ActionPassaAlta());
 		mntmOperaes.addActionListener(new ActionOperacoes());
 		mntmLimiarizao.addActionListener(new ActionLimiarizacao());
 		mntmDilatao.addActionListener(new ActionDilatacao());
 		mntmEroso.addActionListener(new ActionErosao());
 		mntmAbertura.addActionListener(new ActionAbertura());
 		mntmFechamento.addActionListener(new ActionFechamento());
-		mntmProcessamento.addActionListener(new ActionMediana());
-//		mntmMediana.addActionListener(new ActionMediana());
+		mntmProcessamento.addActionListener(new ActionProcessamento());
+		mntmMediana.addActionListener(new ActionMediana());
 
 	}
 
@@ -66,7 +66,7 @@ public class TelaPrincipal extends TelaPrincipalView {
 			int selectedIndex = tabbedPane.getSelectedIndex();
 			JScrollPane scrollPanel = (JScrollPane) tabbedPane.getComponentAt(selectedIndex);
 			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
-			imagePanel.setGrid(telaUtils.mediana(imagePanel.getGrid(),1));
+			imagePanel.setGrid(telaUtils.mediana(imagePanel.getGrid(),3));
 			imagePanel.update();
 			System.out.println("Finale Mediana");
 		}
@@ -183,16 +183,6 @@ public class TelaPrincipal extends TelaPrincipalView {
 				imagePanel.setImagem(Arquivo);
 				imagePanel.reset();
 				imagePanel.update();
-				final ImagePanel imagem = imagePanel;
-				imagePanel.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						Point point = e.getPoint();
-
-						imagePanel.setGrid(telaUtils.verificaImagem(imagem.getGrid(), (int) point.getX(), (int) point.getY()));
-						imagePanel.update();
-					}
-				});
 				if (!Arquivo.isP8bits()) {
 					mntmGreyscale.setEnabled(true);
 				}
@@ -306,8 +296,11 @@ public class TelaPrincipal extends TelaPrincipalView {
 			ImagePanel imagePanel = (ImagePanel) scrollPanel.getViewport().getView();
 
 			BufferedImage grid = imagePanel.getGrid();
-			// imagePanel.setGrid(telaUtils.destacaCell(grid));
-			imagePanel.update();
+			ImagePanel painel = new ImagePanel();
+			painel.setGrid(telaUtils.verificaImagem(grid));
+			JScrollPane scroll = new JScrollPane(painel);
+			pixelUtils.addClosableTab(tabbedPane, scroll, "Mascara", null);
+			painel.update();
 		}
 
 	}
